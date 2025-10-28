@@ -628,8 +628,233 @@ For real?time UX, use the streaming endpoint to process SSE chunks as they arriv
 * Confirm Action pre?auth success and error handling (400/401/403/424/500) with friendly user messages. 
 
 ---
+Here’s a ready-to-import Agent draft you can use as your starting point. It references the CB Insights v2 endpoints (with inline pre?auth) and your four Actions. If your environment supports JSON import for Agent Builder, paste the JSON below; otherwise, use it as a blueprint to configure nodes and schemas in the UI.
 
-If you want, I can turn this into a ready-to-import Agent draft with your exact Action IDs and your Agent ID placeholders filled in.
+### Assumptions and placeholders to replace
+* Replace ACTION_ID_ORG_LOOKUP with your CBInsights.OrganizationLookup action ID.
 
---- 
-Would you like a “compare multiple companies” variant (bulk fundings + outlook) with a tabular response so you can pass an array of domains and get a cross-company view?
+* Replace ACTION_ID_ORG_FUNDINGS with your CBInsights.OrganizationFundings action ID.
+
+* Replace ACTION_ID_ORG_FIRMO with your CBInsights.OrganizationFirmographics action ID.
+
+* Replace ACTION_ID_ORG_OUTLOOK with your CBInsights.OrganizationOutlook action ID.
+
+* Replace AGENT_ID_CBINSIGHTS_SNAPSHOT where needed in your C# integration later. Agents are created/configured in Agent Builder; the Agents API is used to run them. 
+
+All four Actions contain a pre?auth step that POSTs /v2/authorize with clientId/clientSecret and injects Authorization: Bearer <token> into the downstream call. 
+
+---
+
+### Agent draft JSON (CBI Company Snapshot)
+```json
+{
+  "name": "CBI Company Snapshot",
+  "description": "Resolve a company to CB Insights orgId, return latest funding rounds, and optionally enrich with firmographics and outlook (Mosaic, Exit Probability, Commercial Maturity). Uses CB Insights v2 with inline pre-auth.",
+  "visibility": "private",
+  "triggers": [
+    {
+      "type": "chat",
+      "starterPrompts": [
+        "Get a CB Insights snapshot for [[domain]]",
+        "Show latest funding rounds for [[company name]]"
+      ]
+    }
+  ],
+  "input_schema": {
+    "type": "object",
+    "properties": {
+      "domain": { "type": "string", "description": "Company website domain, e.g., acme.com" },
+      "name": { "type": "string", "description": "Exact company name (fallback if domain absent)" },
+      "topN": { "type": "integer", "minimum": 1, "maximum": 100, "default": 3, "description": "Number of latest funding rounds" },
+      "includeFirmographics": { "type": "boolean", "default": true },
+      "includeOutlook": { "type": "boolean", "default": true }
+    },
+    "required": []
+  },
+  "output_schema": {
+    "type": "object",
+    "properties": {
+      "org": {
+        "type": "object",
+        "properties": {
+          "orgId": { "type": "integer" },
+          "name": { "type": "string" },
+          "urls": { "type": "array", "items": { "type": "string" } }
+        }
+      },
+      "firmographics": {
+        "type": "object",
+        "properties": {
+          "summary": {
+            "type": "object",
+            "properties": {
+              "description": { "type": "string" },
+              "url": { "type": "string" },
+              "profileUrl": { "type": "string" },
+              "status": { "type": "string" },
+              "stage": { "type": "string" },
+              "address": {
+                "type": "object",
+                "properties": { "city": { "type": "string" }, "country": { "type": "string" } }
+              }
+            }
+          },
+          "taxonomy": {
+            "type": "object",
+            "properties": {
+              "sector": { "type": "string" },
+              "industry": { "type": "string" },
+              "subindustry": { "type": "string" },
+              "marketNames": { "type": "array", "items": { "type": "string" } }
+            }
+          },
+          "financials": {
+            "type": "object",
+            "properties": {
+              "lastFundingDate": { "type": "string" },
+              "totalFunding": { "type": "number" },
+              "valuation": { "type": "number" }
+            }
+          },
+          "headcount": {
+            "type": "object",
+            "properties": { "currentHeadcount": { "type": "integer" } }
+          }
+        }
+      },
+      "funding_rounds": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "date": { "type": "string" },
+            "round": { "type": "string" },
+            "simplifiedRound": { "type": "string" },
+            "amountInMillions": { "type": "number" },
+            "valuationInMillions": { "type": "number" },
+            "dealId": { "type": "integer" },
+            "investors": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": { "type": "string" },
+                  "orgId": { "type": "integer" },
+                  "isLead": { "type": "boolean" },
+                  "isNew": { "type": "boolean" },
+                  "isFollowOn": { "type": "boolean" }
+                }
+              }
+            },
+            "sources": { "type": "array", "items": { "type": "string" } }
+          }
+        }
+      },
+      "outlook": {
+        "type": "object",
+        "properties": {
+          "mosaic": { "type": "object" },
+          "exitProbability": { "type": "object" },
+          "commercialMaturity": { "type": "object" }
+        }
+      },
+      "sources": { "type": "array", "items": { "type": "string" } }
+    }
+  },
+  "nodes": [
+    {
+      "name": "ValidateInputs",
+      "type": "logic",
+      "condition": "!inputs.domain && !inputs.name",
+      "on_true": {
+        "action": "ask_user",
+        "message": "I can look up a company by domain (preferred) or exact name. Please provide one."
+      }
+    },
+    {
+      "name": "LookupOrg",
+      "type": "action",
+      "actionId": "ACTION_ID_ORG_LOOKUP",
+      "params": { "domain": "{{inputs.domain}}", "name": "{{inputs.name}}", "limit": 1 },
+      "on_error": { "action": "fail_soft", "message": "Organization lookup failed. Please verify the domain or name and try again." },
+      "postcondition": {
+        "condition": "!result.org",
+        "on_true": { "action": "ask_user", "message": "I couldn’t find a match. Can you share the company’s website domain or full legal name?" }
+      }
+    },
+    {
+      "name": "GetFundings",
+      "type": "action",
+      "actionId": "ACTION_ID_ORG_FUNDINGS",
+      "params": { "orgId": "{{nodes.LookupOrg.result.org.orgId}}", "limit": "{{inputs.topN}}" },
+      "on_error": { "action": "warn", "message": "I couldn’t retrieve funding data right now; continuing with available info." }
+    },
+    {
+      "name": "MaybeFirmographics",
+      "type": "branch",
+      "condition": "inputs.includeFirmographics == true",
+      "then": {
+        "name": "GetFirmographics",
+        "type": "action",
+        "actionId": "ACTION_ID_ORG_FIRMO",
+        "params": { "orgId": "{{nodes.LookupOrg.result.org.orgId}}", "limit": 1 },
+        "on_error": { "action": "warn", "message": "Firmographics are temporarily unavailable; continuing." }
+      }
+    },
+    {
+      "name": "MaybeOutlook",
+      "type": "branch",
+      "condition": "inputs.includeOutlook == true",
+      "then": {
+        "name": "GetOutlook",
+        "type": "action",
+        "actionId": "ACTION_ID_ORG_OUTLOOK",
+        "params": { "orgId": "{{nodes.LookupOrg.result.org.orgId}}"},
+        "on_error": { "action": "warn", "message": "Outlook scores are temporarily unavailable; continuing." }
+      }
+    },
+    {
+      "name": "AssembleOutput",
+      "type": "transform",
+      "code": "const org = nodes.LookupOrg.result.org || {}; const firmo = nodes.GetFirmographics?.result?.org || null; const fund = nodes.GetFundings?.result || { funding_rounds: [] }; const outl = nodes.GetOutlook?.result || null; const sources = []; for (const fr of (fund.funding_rounds || [])) { if (Array.isArray(fr.sources)) sources.push(...fr.sources); } return { org: { orgId: org.orgId, name: org.name, urls: org.urls || [] }, firmographics: firmo ? { summary: firmo.summary, taxonomy: firmo.taxonomy, financials: firmo.financials, headcount: firmo.headcount } : null, funding_rounds: fund.funding_rounds || [], outlook: outl ? outl : null, sources: Array.from(new Set(sources)).slice(0, 20) };"
+    },
+    {
+      "name": "RenderAnswer",
+      "type": "respond",
+      "template": "Here’s the snapshot for {{output.org.name}} (OrgID: {{output.org.orgId}}).\\n\\n- Summary: {{output.firmographics.summary.description}}\\n- Sector/Industry: {{output.firmographics.taxonomy.sector}} / {{output.firmographics.taxonomy.industry}}\\n- Headcount: {{output.firmographics.headcount.currentHeadcount}}\\n- Total funding: ${{output.firmographics.financials.totalFunding}}M; Last round date: {{output.firmographics.financials.lastFundingDate}}\\n\\nLatest {{inputs.topN}} funding rounds:\\n{{#each output.funding_rounds}}- {{this.date}} • {{this.simplifiedRound || this.round}} • ${{this.amountInMillions}}M {{#if this.valuationInMillions}}(post: ${{this.valuationInMillions}}M){{/if}} • Investors: {{#if this.investors}}{{this.investors.[0].name}}{{#if this.investors.[1]}}, +{{minus this.investors.length 1}} more{{/if}}{{else}}n/a{{/if}}\\n{{/each}}\\n\\n{{#if output.outlook}}Outlook (if available): Mosaic overall {{output.outlook.mosaic.overall.score}} ({{output.outlook.mosaic.overall.asOfDate}}); Exit Prob (IPO {{output.outlook.exitProbability.ipo.exitProbability}}%, M&A {{output.outlook.exitProbability.mna.exitProbability}}%).{{/if}}\\n\\nSources:\\n{{#each output.sources}}- {{this}}\\n{{/each}}"
+    }
+  ]
+}
+```
+
+---
+
+### How to use with your C# app
+Once you publish the Agent and note its ID, you can run it from C# via the Agents API (stream or wait). Agents are created/configured in Agent Builder; programmatic use is via runs/stream or runs/wait. 
+```csharp
+// Replace with your values
+const string agentId = "AGENT_ID_CBINSIGHTS_SNAPSHOT";
+var payload = new {
+  agentId = agentId,
+  input = new {
+    domain = "acme-robotics.com",
+    topN = 3,
+    includeFirmographics = true,
+    includeOutlook = true
+  }
+};
+// POST to /rest/api/v1/agents/runs/wait or /rest/api/v1/agents/runs/stream with Bearer token
+```
+
+---
+
+### Notes
+* The org lookup calls POST /v2/organizations (credit?free matching) before any billable datasets, which is recommended for canonicalizing orgId. 
+
+* Each Action encapsulates a pre?auth POST /v2/authorize, then injects Authorization: Bearer <token> to downstream v2 calls. Keep clientId/clientSecret in Action secrets. 
+
+* If you want a cross?company comparison Agent, you can swap in the bulk FundingsList Action and a bulk OutlookList variant (POST /v2/outlook with orgIds) to return a table. 
+
+---
+
+If you can share the four Action IDs, I can replace the placeholders (ACTION_ID_*) and return a final JSON file with the exact IDs embedded. Would you like me to also include “See more rounds” pagination nodes that pass nextPageToken back into the funding action?
