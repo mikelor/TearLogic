@@ -1,4 +1,7 @@
 <Solution>
+  <Folder Name="/Agent/">
+    <File Path="README.md" />
+  </Folder>
   <Project Path="TearLogic.Clients/TearLogic.Clients.csproj" />
   <Project Path="TearLogic/TearLogic.csproj" />
 </Solution>
