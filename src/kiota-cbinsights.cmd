@@ -1,0 +1,2 @@
+kiota generate --language CSharp --class-name CBInsightsApiClient --namespace-name TearLogic.Clients --openapi https://api-docs.cbinsights.com/v2/cbinsights_api_v2.json -o ./TearLogic.Clients/kiota --clean-output
+kiota info -d "https://api-docs.cbinsights.com/v2/cbinsights_api_v2.json" -l CSharp

@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="TearLogic.Clients/TearLogic.Clients.csproj" />
+  <Project Path="TearLogic/TearLogic.csproj" />
+</Solution>
