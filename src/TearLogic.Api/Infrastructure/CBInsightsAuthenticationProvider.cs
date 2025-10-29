@@ -25,6 +25,6 @@ public sealed class CBInsightsAuthenticationProvider
     {
         ArgumentNullException.ThrowIfNull(request);
         var token = await _tokenProvider.GetTokenAsync(cancellationToken).ConfigureAwait(false);
-        request.Headers["Authorization"] = $"Bearer {token}";
+        request.Headers["Authorization"] = new[] { $"Bearer {token}" };
     }
 }

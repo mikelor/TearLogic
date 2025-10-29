@@ -52,7 +52,7 @@ public sealed class CBInsightsClient
         catch (ErrorWithCode exception)
         {
             var errorMessage = _errorMessageProvider.GetString("OrganizationLookupFailed") ?? "CB Insights organization lookup failed.";
-            _logger.LogError(exception, errorMessage + " Code: {Code}", exception.Code);
+            _logger.LogError(exception, errorMessage + " Code: {Code}", exception.Error);
             throw;
         }
         catch (Exception exception)
