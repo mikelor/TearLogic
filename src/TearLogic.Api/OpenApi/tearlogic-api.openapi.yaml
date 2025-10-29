@@ -1,0 +1,241 @@
+openapi: 3.0.1
+info:
+  title: TearLogic CB Insights API
+  version: v1
+  description: |
+    Provides TearLogic-hosted endpoints that proxy CB Insights organization lookup capabilities.
+    Use these endpoints to search for organizations by name, retrieve matching profiles, and
+    fetch a single organization profile by name.
+  contact:
+    name: TearLogic
+    url: https://www.tearlogic.com
+servers:
+  - url: https://localhost:5001
+    description: Local development server
+  - url: https://localhost:5000
+    description: Local development server (HTTP)
+paths:
+  /api/cbinsights/organizations:
+    get:
+      summary: Search for organization profiles by name
+      description: |
+        Retrieves organization profiles that match any of the supplied organization names.
+        At least one `names` parameter must be provided. The API returns validation errors if the
+        provided data is invalid.
+      tags:
+        - Organization Lookup
+      parameters:
+        - name: names
+          in: query
+          required: true
+          description: Organization names to match. Provide the parameter multiple times to query more than one organization.
+          schema:
+            type: array
+            items:
+              type: string
+            minItems: 1
+          style: form
+          explode: true
+        - name: limit
+          in: query
+          required: false
+          description: Maximum number of organizations to return. Must be between 1 and 100.
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+            maximum: 100
+      responses:
+        '200':
+          description: Successful organization lookup response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrgLookupResponse'
+        '400':
+          description: Validation error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '500':
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+    post:
+      summary: Perform an organization lookup using custom criteria
+      description: |
+        Executes an organization lookup with the specified search criteria. The request must contain
+        at least one search parameter such as `names`, `urls`, or `profileUrl`.
+      tags:
+        - Organization Lookup
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrganizationLookupRequest'
+      responses:
+        '200':
+          description: Successful organization lookup response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrgLookupResponse'
+        '400':
+          description: Validation error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '500':
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+  /api/cbinsights/organizations/{organization}:
+    get:
+      summary: Retrieve a single organization profile by name
+      description: |
+        Retrieves the first organization profile that matches the supplied organization name.
+        Returns HTTP 404 if no matching organization is found.
+      tags:
+        - Organization Lookup
+      parameters:
+        - name: organization
+          in: path
+          required: true
+          description: Organization name to retrieve.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Organization profile found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Org'
+        '400':
+          description: Validation error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '404':
+          description: Organization not found
+        '500':
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+components:
+  schemas:
+    OrganizationLookupRequest:
+      type: object
+      description: Search parameters to lookup organization profiles. At least one search parameter must be provided.
+      properties:
+        names:
+          type: array
+          items:
+            type: string
+          description: Organization names to look up.
+        urls:
+          type: array
+          items:
+            type: string
+            format: uri
+          description: Organization URLs to look up.
+        profileUrl:
+          type: string
+          format: uri
+          description: Profile URL to look up. Mutually exclusive with `names` and `urls`.
+        nextPageToken:
+          type: string
+          description: Token that represents the next page of results.
+        limit:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 100
+          description: Maximum number of results to return.
+        sort:
+          $ref: '#/components/schemas/OrganizationLookupRequestSort'
+      additionalProperties: false
+    OrganizationLookupRequestSort:
+      type: object
+      description: Sort options for organization lookup results.
+      properties:
+        field:
+          type: string
+          description: Field name to sort by.
+        direction:
+          type: string
+          description: Sort direction (e.g., `asc` or `desc`).
+      additionalProperties: false
+    OrgLookupResponse:
+      type: object
+      description: Response containing the results of an organization lookup request.
+      properties:
+        nextPageToken:
+          type: string
+          description: Token to fetch the next page of results.
+        orgs:
+          type: array
+          description: List of organization profiles that match the search criteria.
+          items:
+            $ref: '#/components/schemas/Org'
+        totalHits:
+          type: integer
+          format: int32
+          description: Total number of organizations matching the request parameters.
+        totalHitsRelation:
+          type: string
+          description: Indicates whether `totalHits` is equal to (`eq`) or greater than or equal to (`gte`) the number of organizations that can be fetched.
+      additionalProperties: true
+    Org:
+      type: object
+      description: Basic organization profile information returned by the lookup endpoints.
+      properties:
+        aliases:
+          type: array
+          items:
+            type: string
+          description: Known aliases for the organization.
+        description:
+          type: string
+          description: Description of the organization.
+        name:
+          type: string
+          description: Primary organization name.
+        orgId:
+          type: integer
+          format: int32
+          description: CB Insights organization identifier.
+        urls:
+          type: array
+          items:
+            type: string
+            format: uri
+          description: URLs associated with the organization.
+      additionalProperties: true
+    ProblemDetails:
+      type: object
+      description: RFC 7807 problem details response.
+      properties:
+        type:
+          type: string
+          format: uri
+        title:
+          type: string
+        status:
+          type: integer
+          format: int32
+        detail:
+          type: string
+        instance:
+          type: string
+      additionalProperties: true
