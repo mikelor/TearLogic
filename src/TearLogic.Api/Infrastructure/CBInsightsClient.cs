@@ -4,7 +4,7 @@ using TearLogic.Clients;
 using TearLogic.Clients.Models.Common;
 using TearLogic.Clients.Models.V2OrganizationLookup;
 
-namespace Service.CBInsights.Infrastructure;
+namespace TearLogic.Api.CBInsights.Infrastructure;
 
 /// <summary>
 /// Provides Kiota-based access to the CB Insights API.

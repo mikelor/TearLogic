@@ -1,6 +1,6 @@
 using TearLogic.Clients.Models.V2OrganizationLookup;
 
-namespace Service.CBInsights.Commands.OrganizationLookup;
+namespace TearLogic.Api.CBInsights.Commands.OrganizationLookup;
 
 /// <summary>
 /// Represents an organization lookup command.

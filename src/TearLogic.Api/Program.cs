@@ -1,4 +1,4 @@
-using Service.CBInsights.Controllers;
+using TearLogic.Api.CBInsights.Controllers;
 
 var builder = WebApplication.CreateBuilder(args);
 

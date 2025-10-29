@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Service.CBInsights.Configuration;
+namespace TearLogic.Api.CBInsights.Configuration;
 
 /// <summary>
 /// Represents CB Insights configuration settings.

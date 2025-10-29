@@ -1,4 +1,4 @@
-namespace Service.CBInsights.Commands;
+namespace TearLogic.Api.CBInsights.Commands;
 
 /// <summary>
 /// Provides a base abstraction for handling commands.

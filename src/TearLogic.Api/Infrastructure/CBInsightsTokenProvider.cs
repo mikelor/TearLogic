@@ -1,6 +1,6 @@
 using System.Net.Http.Json;
 
-namespace Service.CBInsights.Infrastructure;
+namespace TearLogic.Api.CBInsights.Infrastructure;
 
 /// <summary>
 /// Provides tokens for authenticating CB Insights requests.

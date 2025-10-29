@@ -1,7 +1,7 @@
 using Microsoft.Kiota.Abstractions;
 using Microsoft.Kiota.Abstractions.Authentication;
 
-namespace Service.CBInsights.Infrastructure;
+namespace TearLogic.Api.CBInsights.Infrastructure;
 
 /// <summary>
 /// Provides authentication for CB Insights requests.

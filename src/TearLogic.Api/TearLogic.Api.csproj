@@ -18,7 +18,11 @@
     <ProjectReference Include="..\TearLogic.Clients\TearLogic.Clients.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources/LogMessages.resx" />
-    <EmbeddedResource Include="Resources/ErrorMessages.resx" />
+    <EmbeddedResource Include="Resources/LogMessages.resx">
+      <LogicalName>TearLogic.Api.CBInsights.Resources.LogMessages.resources</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources/ErrorMessages.resx">
+      <LogicalName>TearLogic.Api.CBInsights.Resources.ErrorMessages.resources</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
 </Project>

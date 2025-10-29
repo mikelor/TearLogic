@@ -1,4 +1,4 @@
-namespace Service.CBInsights.Infrastructure;
+namespace TearLogic.Api.CBInsights.Infrastructure;
 
 /// <summary>
 /// Provides reusable Polly policies for HTTP resilience.

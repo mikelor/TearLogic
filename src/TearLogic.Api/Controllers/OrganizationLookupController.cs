@@ -1,7 +1,7 @@
-using Service.CBInsights.Requests;
+using TearLogic.Api.CBInsights.Requests;
 using TearLogic.Clients.Models.V2OrganizationLookup;
 
-namespace Service.CBInsights.Controllers;
+namespace TearLogic.Api.CBInsights.Controllers;
 
 /// <summary>
 /// Exposes endpoints for CB Insights organization lookup operations.

@@ -1,6 +1,6 @@
 using TearLogic.Clients.Models.V2OrganizationLookup;
 
-namespace Service.CBInsights.Infrastructure;
+namespace TearLogic.Api.CBInsights.Infrastructure;
 
 /// <summary>
 /// Provides CB Insights client operations.

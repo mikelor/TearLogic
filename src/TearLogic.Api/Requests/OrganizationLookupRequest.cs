@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using TearLogic.Clients.Models.V2OrganizationLookup;
 
-namespace Service.CBInsights.Requests;
+namespace TearLogic.Api.CBInsights.Requests;
 
 /// <summary>
 /// Represents an API request for CB Insights organization lookup.
