@@ -1,0 +1,12 @@
+﻿global using Microsoft.AspNetCore.Mvc;
+global using Microsoft.Extensions.Caching.Memory;
+global using Microsoft.Extensions.Logging;
+global using Microsoft.Extensions.Options;
+global using Polly;
+global using Polly.Contrib.WaitAndRetry;
+global using Polly.Extensions.Http;
+global using TearLogic.Api.CBInsights.Commands;
+global using TearLogic.Api.CBInsights.Commands.OrganizationLookup;
+global using TearLogic.Api.CBInsights.Configuration;
+global using TearLogic.Api.CBInsights.Diagnostics;
+global using TearLogic.Api.CBInsights.Infrastructure;
