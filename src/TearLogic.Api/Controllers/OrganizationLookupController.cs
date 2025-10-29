@@ -73,10 +73,11 @@ public sealed class OrganizationLookupController
             return ValidationProblem(ModelState);
         }
 
+        // Fix: Ensure normalizedNames is not null before dereferencing Count
         var requestBody = new OrgLookupRequestBody
         {
             Names = normalizedNames,
-            Limit = limit ?? Math.Min(normalizedNames.Count, 100)
+            Limit = limit ?? Math.Min(normalizedNames?.Count ?? 0, 100)
         };
 
         var command = new OrganizationLookupCommand(requestBody);
