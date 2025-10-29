@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using TearLogic.Api.CBInsights.Requests;
 using TearLogic.Clients.Models.V2OrganizationLookup;
 
@@ -36,6 +38,78 @@ public sealed class OrganizationLookupController
         var command = new OrganizationLookupCommand(request.ToKiotaModel());
         var response = await _commandHandler.HandleAsync(command, cancellationToken).ConfigureAwait(false);
         return Ok(response);
+    }
+
+    /// <summary>
+    /// Retrieves a list of organizations matching the supplied query parameters.
+    /// </summary>
+    /// <param name="request">The lookup request constructed from query parameters.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The lookup response.</returns>
+    [HttpGet]
+    [ProducesResponseType(typeof(OrgLookupResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> GetAsync([FromQuery] OrganizationLookupRequest request, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+
+        if (!HasLookupCriteria(request))
+        {
+            ModelState.AddModelError(nameof(request), "At least one search parameter must be provided.");
+        }
+
+        if (!ModelState.IsValid)
+        {
+            return ValidationProblem(ModelState);
+        }
+
+        var command = new OrganizationLookupCommand(request.ToKiotaModel());
+        var response = await _commandHandler.HandleAsync(command, cancellationToken).ConfigureAwait(false);
+        return Ok(response);
+    }
+
+    /// <summary>
+    /// Retrieves a single organization by name.
+    /// </summary>
+    /// <param name="organization">The organization name to look up.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The matching organization if found.</returns>
+    [HttpGet("{organization}")]
+    [ProducesResponseType(typeof(Org), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> GetByOrganizationAsync([FromRoute] string organization, CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrWhiteSpace(organization))
+        {
+            ModelState.AddModelError(nameof(organization), "An organization name is required.");
+            return ValidationProblem(ModelState);
+        }
+
+        var lookupRequest = new OrganizationLookupRequest
+        {
+            Names = new List<string> { organization.Trim() },
+            Limit = 1
+        };
+
+        var command = new OrganizationLookupCommand(lookupRequest.ToKiotaModel());
+        var response = await _commandHandler.HandleAsync(command, cancellationToken).ConfigureAwait(false);
+
+        if (response?.Orgs is null || response.Orgs.Count == 0)
+        {
+            return NotFound();
+        }
+
+        return Ok(response.Orgs[0]);
+    }
+
+    private static bool HasLookupCriteria(OrganizationLookupRequest request)
+    {
+        return (request.Names is not null && request.Names.Any(static name => !string.IsNullOrWhiteSpace(name))) ||
+            (request.Urls is not null && request.Urls.Any(static url => !string.IsNullOrWhiteSpace(url))) ||
+            !string.IsNullOrWhiteSpace(request.ProfileUrl);
     }
 }
 
