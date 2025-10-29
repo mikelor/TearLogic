@@ -1,0 +1,12 @@
+﻿global using Microsoft.AspNetCore.Mvc;
+global using Microsoft.Extensions.Caching.Memory;
+global using Microsoft.Extensions.Logging;
+global using Microsoft.Extensions.Options;
+global using Polly;
+global using Polly.Contrib.WaitAndRetry;
+global using Polly.Extensions.Http;
+global using Service.CBInsights.Commands;
+global using Service.CBInsights.Commands.OrganizationLookup;
+global using Service.CBInsights.Configuration;
+global using Service.CBInsights.Diagnostics;
+global using Service.CBInsights.Infrastructure;
