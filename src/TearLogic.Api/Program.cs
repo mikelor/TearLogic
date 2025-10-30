@@ -31,6 +31,18 @@ builder.Services.AddSwaggerGen(static options =>
     }
 
     options.SupportNonNullableReferenceTypes();
+    options.CustomSchemaIds(static type =>
+    {
+        if (type.FullName is null)
+        {
+            return type.Name;
+        }
+
+        return type.FullName
+            .Replace("TearLogic.", string.Empty, StringComparison.Ordinal)
+            .Replace(".", "_", StringComparison.Ordinal)
+            .Replace("+", "_", StringComparison.Ordinal);
+    });
 });
 builder.Services.AddMemoryCache();
 
