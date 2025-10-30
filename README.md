@@ -1,6 +1,7 @@
-# TearLogic: Company Summary & Value Proposition
+<<p align="center"><img src=tearlogiclogo.jpg width=250x /></p>
 
-![TearLogic Logo](tearlogiclogo.jpg = 250x)
+# Company Summary & Value Proposition
+
 
 ## I. Core Identity Statement
 
