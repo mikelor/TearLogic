@@ -24,4 +24,10 @@
   <data name="OrganizationLookupCompleted" xml:space="preserve">
     <value>Organization lookup completed successfully.</value>
   </data>
+  <data name="FirmographicsLookupStarted" xml:space="preserve">
+    <value>Submitting firmographics request to CB Insights.</value>
+  </data>
+  <data name="FirmographicsLookupCompleted" xml:space="preserve">
+    <value>Firmographics request completed successfully.</value>
+  </data>
 </root>
