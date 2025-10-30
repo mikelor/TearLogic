@@ -48,6 +48,7 @@ builder.Services.AddSingleton<ICBInsightsAuthenticationProvider, CBInsightsAuthe
 builder.Services.AddSingleton<ICBInsightsRequestAdapterFactory, CBInsightsRequestAdapterFactory>();
 builder.Services.AddScoped<ICBInsightsClient, CBInsightsClient>();
 builder.Services.AddScoped<IOrganizationLookupCommandHandler, OrganizationLookupCommandHandler>();
+builder.Services.AddScoped<IFirmographicsCommandHandler, FirmographicsCommandHandler>();
 
 builder.Services.AddHttpClient(CBInsightsHttpClientNames.Authorization, (provider, client) =>
 {

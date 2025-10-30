@@ -2,6 +2,7 @@ using Microsoft.Kiota.Abstractions;
 using Microsoft.Kiota.Http.HttpClientLibrary;
 using TearLogic.Clients;
 using TearLogic.Clients.Models.Common;
+using TearLogic.Clients.Models.V2Firmographics;
 using TearLogic.Clients.Models.V2OrganizationLookup;
 
 namespace TearLogic.Api.CBInsights.Infrastructure;
@@ -58,6 +59,45 @@ public sealed class CBInsightsClient
         catch (Exception exception)
         {
             var errorMessage = _errorMessageProvider.GetString("OrganizationLookupFailed") ?? "CB Insights organization lookup failed.";
+            _logger.LogError(exception, errorMessage);
+            throw;
+        }
+    }
+
+    /// <inheritdoc />
+    public async Task<FirmographicsResponse?> GetFirmographicsAsync(FirmographicsRequestBody request, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+        var options = _optionsMonitor.CurrentValue;
+        var adapter = await _requestAdapterFactory.CreateAsync(cancellationToken).ConfigureAwait(false);
+        adapter.BaseUrl = options.BaseUrl;
+        var client = new CBInsightsApiClient(adapter);
+        var message = _logMessageProvider.GetString("FirmographicsLookupStarted");
+        if (!string.IsNullOrWhiteSpace(message))
+        {
+            _logger.LogInformation(message);
+        }
+
+        try
+        {
+            var response = await client.V2.Firmographics.PostAsync(request, cancellationToken: cancellationToken).ConfigureAwait(false);
+            message = _logMessageProvider.GetString("FirmographicsLookupCompleted");
+            if (!string.IsNullOrWhiteSpace(message))
+            {
+                _logger.LogInformation(message);
+            }
+
+            return response;
+        }
+        catch (ErrorWithCode exception)
+        {
+            var errorMessage = _errorMessageProvider.GetString("FirmographicsLookupFailed") ?? "CB Insights firmographics lookup failed.";
+            _logger.LogError(exception, errorMessage + " Code: {Code}", exception.Error);
+            throw;
+        }
+        catch (Exception exception)
+        {
+            var errorMessage = _errorMessageProvider.GetString("FirmographicsLookupFailed") ?? "CB Insights firmographics lookup failed.";
             _logger.LogError(exception, errorMessage);
             throw;
         }
