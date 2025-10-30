@@ -1,5 +1,4 @@
 <Solution>
-  <Project Path="TearLogic.Clients/TearLogic.Clients.csproj" />
-  <Project Path="TearLogic/TearLogic.csproj" />
   <Project Path="TearLogic.Api/TearLogic.Api.csproj" />
+  <Project Path="TearLogic.Clients/TearLogic.Clients.csproj" />
 </Solution>
