@@ -21,4 +21,7 @@
   <data name="OrganizationLookupFailed" xml:space="preserve">
     <value>CB Insights organization lookup failed.</value>
   </data>
+  <data name="FirmographicsLookupFailed" xml:space="preserve">
+    <value>CB Insights firmographics lookup failed.</value>
+  </data>
 </root>
