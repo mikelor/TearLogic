@@ -1,10 +1,37 @@
+using System.IO;
+using System.Reflection;
+using Microsoft.OpenApi.Models;
 using TearLogic.Api.CBInsights.Controllers;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers().AddApplicationPart(typeof(OrganizationLookupController).Assembly);
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(static options =>
+{
+    options.SwaggerDoc(
+        "v1",
+        new OpenApiInfo
+        {
+            Title = "TearLogic CB Insights API",
+            Version = "v1",
+            Description = "API endpoints that proxy CB Insights organization lookup capabilities for TearLogic.",
+            Contact = new OpenApiContact
+            {
+                Name = "TearLogic",
+                Url = new Uri("https://www.tearlogic.com", UriKind.Absolute)
+            }
+        });
+
+    var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlFilePath = Path.Combine(AppContext.BaseDirectory, xmlFilename);
+    if (File.Exists(xmlFilePath))
+    {
+        options.IncludeXmlComments(xmlFilePath);
+    }
+
+    options.SupportNonNullableReferenceTypes();
+});
 builder.Services.AddMemoryCache();
 
 builder.Services.AddOptions<CBInsightsOptions>()
@@ -47,7 +74,11 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(static options =>
+    {
+        options.DocumentTitle = "TearLogic CB Insights API";
+        options.SwaggerEndpoint("/swagger/v1/swagger.json", "TearLogic CB Insights API v1");
+    });
 }
 
 app.UseHttpsRedirection();
