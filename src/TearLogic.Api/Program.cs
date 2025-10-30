@@ -86,7 +86,30 @@ var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
+    app.UseSwagger(options =>
+    {
+        options.PreSerializeFilters.Add((swaggerDoc, httpReq) =>
+        {
+            swaggerDoc.Servers = new List<OpenApiServer>
+            {
+                new OpenApiServer
+                {
+                    Url = "https://api.example.com/v1", // Production API URL
+                    Description = "Production Server (Live Data)"
+                },
+                new OpenApiServer
+                {
+                    Url = "https://sandbox-api.example.com:8443/v1", // QA API URL
+                    Description = "Sandbox Server (Test Data)"
+                },
+                new OpenApiServer
+                {
+                    Url = $"{httpReq.Scheme}://{httpReq.Host.Value}", // Dynamically set from current request
+                    Description = "Development Server (Local Host)"
+                }
+            };
+        });
+    });
     app.UseSwaggerUI(static options =>
     {
         options.DocumentTitle = "TearLogic CB Insights API";
