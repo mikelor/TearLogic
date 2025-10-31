@@ -61,6 +61,11 @@ builder.Services.AddSingleton<ICBInsightsRequestAdapterFactory, CBInsightsReques
 builder.Services.AddScoped<ICBInsightsClient, CBInsightsClient>();
 builder.Services.AddScoped<IOrganizationLookupCommandHandler, OrganizationLookupCommandHandler>();
 builder.Services.AddScoped<IFirmographicsCommandHandler, FirmographicsCommandHandler>();
+builder.Services.AddScoped<IFundingsCommandHandler, FundingsCommandHandler>();
+builder.Services.AddScoped<IInvestmentsCommandHandler, InvestmentsCommandHandler>();
+builder.Services.AddScoped<IPortfolioExitsCommandHandler, PortfolioExitsCommandHandler>();
+builder.Services.AddScoped<IBusinessRelationshipsCommandHandler, BusinessRelationshipsCommandHandler>();
+builder.Services.AddScoped<IManagementAndBoardCommandHandler, ManagementAndBoardCommandHandler>();
 
 builder.Services.AddHttpClient(CBInsightsHttpClientNames.Authorization, (provider, client) =>
 {

@@ -8,7 +8,7 @@ namespace TearLogic.Api.CBInsights.Controllers;
 /// Exposes endpoints for CB Insights firmographics operations.
 /// </summary>
 [ApiController]
-[Route("api/cbinsights/firmographics")]
+[Route("api/cbinsights/organizations")]
 public sealed class FirmographicsController
 (
     IFirmographicsCommandHandler commandHandler
@@ -22,7 +22,7 @@ public sealed class FirmographicsController
     /// <param name="organizationId">The CB Insights organization identifier.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The firmographics profile for the organization if it exists.</returns>
-    [HttpGet("{organizationId:int}")]
+    [HttpGet("{organizationId:int}/firmographics")]
     [ProducesResponseType(typeof(Org), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

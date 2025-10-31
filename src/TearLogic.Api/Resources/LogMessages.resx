@@ -30,4 +30,34 @@
   <data name="FirmographicsLookupCompleted" xml:space="preserve">
     <value>Firmographics request completed successfully.</value>
   </data>
+  <data name="FundingsRequestStarted" xml:space="preserve">
+    <value>Submitting fundings request to CB Insights.</value>
+  </data>
+  <data name="FundingsRequestCompleted" xml:space="preserve">
+    <value>Fundings request completed successfully.</value>
+  </data>
+  <data name="InvestmentsRequestStarted" xml:space="preserve">
+    <value>Submitting investments request to CB Insights.</value>
+  </data>
+  <data name="InvestmentsRequestCompleted" xml:space="preserve">
+    <value>Investments request completed successfully.</value>
+  </data>
+  <data name="PortfolioExitsRequestStarted" xml:space="preserve">
+    <value>Submitting portfolio exits request to CB Insights.</value>
+  </data>
+  <data name="PortfolioExitsRequestCompleted" xml:space="preserve">
+    <value>Portfolio exits request completed successfully.</value>
+  </data>
+  <data name="BusinessRelationshipsRequestStarted" xml:space="preserve">
+    <value>Submitting business relationships request to CB Insights.</value>
+  </data>
+  <data name="BusinessRelationshipsRequestCompleted" xml:space="preserve">
+    <value>Business relationships request completed successfully.</value>
+  </data>
+  <data name="ManagementAndBoardRequestStarted" xml:space="preserve">
+    <value>Submitting management and board request to CB Insights.</value>
+  </data>
+  <data name="ManagementAndBoardRequestCompleted" xml:space="preserve">
+    <value>Management and board request completed successfully.</value>
+  </data>
 </root>

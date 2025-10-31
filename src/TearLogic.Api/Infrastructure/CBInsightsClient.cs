@@ -1,8 +1,12 @@
+using System;
 using Microsoft.Kiota.Abstractions;
 using Microsoft.Kiota.Http.HttpClientLibrary;
 using TearLogic.Clients;
 using TearLogic.Clients.Models.Common;
+using TearLogic.Clients.Models.V2BusinessRelationships;
+using TearLogic.Clients.Models.V2FinancialTransactions;
 using TearLogic.Clients.Models.V2Firmographics;
+using TearLogic.Clients.Models.V2ManagementAndBoard;
 using TearLogic.Clients.Models.V2OrganizationLookup;
 
 namespace TearLogic.Api.CBInsights.Infrastructure;
@@ -29,10 +33,7 @@ public sealed class CBInsightsClient
     public async Task<OrgLookupResponse?> LookupOrganizationAsync(OrgLookupRequestBody request, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(request);
-        var options = _optionsMonitor.CurrentValue;
-        var adapter = await _requestAdapterFactory.CreateAsync(cancellationToken).ConfigureAwait(false);
-        adapter.BaseUrl = options.BaseUrl;
-        var client = new CBInsightsApiClient(adapter);
+        var client = await CreateClientAsync(cancellationToken).ConfigureAwait(false);
         var message = _logMessageProvider.GetString("OrganizationLookupStarted");
         if (!string.IsNullOrWhiteSpace(message))
         {
@@ -68,10 +69,7 @@ public sealed class CBInsightsClient
     public async Task<FirmographicsResponse?> GetFirmographicsAsync(FirmographicsRequestBody request, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(request);
-        var options = _optionsMonitor.CurrentValue;
-        var adapter = await _requestAdapterFactory.CreateAsync(cancellationToken).ConfigureAwait(false);
-        adapter.BaseUrl = options.BaseUrl;
-        var client = new CBInsightsApiClient(adapter);
+        var client = await CreateClientAsync(cancellationToken).ConfigureAwait(false);
         var message = _logMessageProvider.GetString("FirmographicsLookupStarted");
         if (!string.IsNullOrWhiteSpace(message))
         {
@@ -101,6 +99,216 @@ public sealed class CBInsightsClient
             _logger.LogError(exception, errorMessage);
             throw;
         }
+    }
+    /// <inheritdoc />
+    public async Task<FundingsResponse?> GetFundingsAsync(int organizationId, ListTransactionsForOrganizationRequest request, CancellationToken cancellationToken)
+    {
+        if (organizationId <= 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(organizationId), organizationId, "The organization identifier must be a positive integer.");
+        }
+
+        ArgumentNullException.ThrowIfNull(request);
+        var client = await CreateClientAsync(cancellationToken).ConfigureAwait(false);
+        var message = _logMessageProvider.GetString("FundingsRequestStarted");
+        if (!string.IsNullOrWhiteSpace(message))
+        {
+            _logger.LogInformation(message);
+        }
+
+        try
+        {
+            var response = await client.V2.Organizations[organizationId].Financialtransactions.Fundings.PostAsync(request, cancellationToken: cancellationToken).ConfigureAwait(false);
+            message = _logMessageProvider.GetString("FundingsRequestCompleted");
+            if (!string.IsNullOrWhiteSpace(message))
+            {
+                _logger.LogInformation(message);
+            }
+
+            return response;
+        }
+        catch (ErrorWithCode exception)
+        {
+            var errorMessage = _errorMessageProvider.GetString("FundingsRequestFailed") ?? "CB Insights fundings request failed.";
+            _logger.LogError(exception, errorMessage + " Code: {Code}", exception.Error);
+            throw;
+        }
+        catch (Exception exception)
+        {
+            var errorMessage = _errorMessageProvider.GetString("FundingsRequestFailed") ?? "CB Insights fundings request failed.";
+            _logger.LogError(exception, errorMessage);
+            throw;
+        }
+    }
+
+    /// <inheritdoc />
+    public async Task<InvestmentsResponse?> GetInvestmentsAsync(int organizationId, ListTransactionsForOrganizationRequest request, CancellationToken cancellationToken)
+    {
+        if (organizationId <= 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(organizationId), organizationId, "The organization identifier must be a positive integer.");
+        }
+
+        ArgumentNullException.ThrowIfNull(request);
+        var client = await CreateClientAsync(cancellationToken).ConfigureAwait(false);
+        var message = _logMessageProvider.GetString("InvestmentsRequestStarted");
+        if (!string.IsNullOrWhiteSpace(message))
+        {
+            _logger.LogInformation(message);
+        }
+
+        try
+        {
+            var response = await client.V2.Organizations[organizationId].Financialtransactions.Investments.PostAsync(request, cancellationToken: cancellationToken).ConfigureAwait(false);
+            message = _logMessageProvider.GetString("InvestmentsRequestCompleted");
+            if (!string.IsNullOrWhiteSpace(message))
+            {
+                _logger.LogInformation(message);
+            }
+
+            return response;
+        }
+        catch (ErrorWithCode exception)
+        {
+            var errorMessage = _errorMessageProvider.GetString("InvestmentsRequestFailed") ?? "CB Insights investments request failed.";
+            _logger.LogError(exception, errorMessage + " Code: {Code}", exception.Error);
+            throw;
+        }
+        catch (Exception exception)
+        {
+            var errorMessage = _errorMessageProvider.GetString("InvestmentsRequestFailed") ?? "CB Insights investments request failed.";
+            _logger.LogError(exception, errorMessage);
+            throw;
+        }
+    }
+
+    /// <inheritdoc />
+    public async Task<PortfolioExitsResponse?> GetPortfolioExitsAsync(int organizationId, CancellationToken cancellationToken)
+    {
+        if (organizationId <= 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(organizationId), organizationId, "The organization identifier must be a positive integer.");
+        }
+
+        var client = await CreateClientAsync(cancellationToken).ConfigureAwait(false);
+        var message = _logMessageProvider.GetString("PortfolioExitsRequestStarted");
+        if (!string.IsNullOrWhiteSpace(message))
+        {
+            _logger.LogInformation(message);
+        }
+
+        try
+        {
+            var response = await client.V2.Organizations[organizationId].Financialtransactions.Portfolioexits.PostAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
+            message = _logMessageProvider.GetString("PortfolioExitsRequestCompleted");
+            if (!string.IsNullOrWhiteSpace(message))
+            {
+                _logger.LogInformation(message);
+            }
+
+            return response;
+        }
+        catch (ErrorWithCode exception)
+        {
+            var errorMessage = _errorMessageProvider.GetString("PortfolioExitsRequestFailed") ?? "CB Insights portfolio exits request failed.";
+            _logger.LogError(exception, errorMessage + " Code: {Code}", exception.Error);
+            throw;
+        }
+        catch (Exception exception)
+        {
+            var errorMessage = _errorMessageProvider.GetString("PortfolioExitsRequestFailed") ?? "CB Insights portfolio exits request failed.";
+            _logger.LogError(exception, errorMessage);
+            throw;
+        }
+    }
+
+    /// <inheritdoc />
+    public async Task<BusinessRelationshipsResponse?> GetBusinessRelationshipsAsync(int organizationId, CancellationToken cancellationToken)
+    {
+        if (organizationId <= 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(organizationId), organizationId, "The organization identifier must be a positive integer.");
+        }
+
+        var client = await CreateClientAsync(cancellationToken).ConfigureAwait(false);
+        var message = _logMessageProvider.GetString("BusinessRelationshipsRequestStarted");
+        if (!string.IsNullOrWhiteSpace(message))
+        {
+            _logger.LogInformation(message);
+        }
+
+        try
+        {
+            var response = await client.V2.Organizations[organizationId].Businessrelationships.PostAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
+            message = _logMessageProvider.GetString("BusinessRelationshipsRequestCompleted");
+            if (!string.IsNullOrWhiteSpace(message))
+            {
+                _logger.LogInformation(message);
+            }
+
+            return response;
+        }
+        catch (ErrorWithCode exception)
+        {
+            var errorMessage = _errorMessageProvider.GetString("BusinessRelationshipsRequestFailed") ?? "CB Insights business relationships request failed.";
+            _logger.LogError(exception, errorMessage + " Code: {Code}", exception.Error);
+            throw;
+        }
+        catch (Exception exception)
+        {
+            var errorMessage = _errorMessageProvider.GetString("BusinessRelationshipsRequestFailed") ?? "CB Insights business relationships request failed.";
+            _logger.LogError(exception, errorMessage);
+            throw;
+        }
+    }
+
+    /// <inheritdoc />
+    public async Task<ManagementAndBoardResponse?> GetManagementAndBoardAsync(int organizationId, ManagementAndBoardRequestBody request, CancellationToken cancellationToken)
+    {
+        if (organizationId <= 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(organizationId), organizationId, "The organization identifier must be a positive integer.");
+        }
+
+        ArgumentNullException.ThrowIfNull(request);
+        var client = await CreateClientAsync(cancellationToken).ConfigureAwait(false);
+        var message = _logMessageProvider.GetString("ManagementAndBoardRequestStarted");
+        if (!string.IsNullOrWhiteSpace(message))
+        {
+            _logger.LogInformation(message);
+        }
+
+        try
+        {
+            var response = await client.V2.Organizations[organizationId].Managementandboard.PostAsync(request, cancellationToken: cancellationToken).ConfigureAwait(false);
+            message = _logMessageProvider.GetString("ManagementAndBoardRequestCompleted");
+            if (!string.IsNullOrWhiteSpace(message))
+            {
+                _logger.LogInformation(message);
+            }
+
+            return response;
+        }
+        catch (ErrorWithCode exception)
+        {
+            var errorMessage = _errorMessageProvider.GetString("ManagementAndBoardRequestFailed") ?? "CB Insights management and board request failed.";
+            _logger.LogError(exception, errorMessage + " Code: {Code}", exception.Error);
+            throw;
+        }
+        catch (Exception exception)
+        {
+            var errorMessage = _errorMessageProvider.GetString("ManagementAndBoardRequestFailed") ?? "CB Insights management and board request failed.";
+            _logger.LogError(exception, errorMessage);
+            throw;
+        }
+    }
+
+    private async Task<CBInsightsApiClient> CreateClientAsync(CancellationToken cancellationToken)
+    {
+        var options = _optionsMonitor.CurrentValue;
+        var adapter = await _requestAdapterFactory.CreateAsync(cancellationToken).ConfigureAwait(false);
+        adapter.BaseUrl = options.BaseUrl;
+        return new CBInsightsApiClient(adapter);
     }
 }
 

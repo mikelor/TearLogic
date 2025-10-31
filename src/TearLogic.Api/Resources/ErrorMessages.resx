@@ -24,4 +24,19 @@
   <data name="FirmographicsLookupFailed" xml:space="preserve">
     <value>CB Insights firmographics lookup failed.</value>
   </data>
+  <data name="FundingsRequestFailed" xml:space="preserve">
+    <value>CB Insights fundings request failed.</value>
+  </data>
+  <data name="InvestmentsRequestFailed" xml:space="preserve">
+    <value>CB Insights investments request failed.</value>
+  </data>
+  <data name="PortfolioExitsRequestFailed" xml:space="preserve">
+    <value>CB Insights portfolio exits request failed.</value>
+  </data>
+  <data name="BusinessRelationshipsRequestFailed" xml:space="preserve">
+    <value>CB Insights business relationships request failed.</value>
+  </data>
+  <data name="ManagementAndBoardRequestFailed" xml:space="preserve">
+    <value>CB Insights management and board request failed.</value>
+  </data>
 </root>
