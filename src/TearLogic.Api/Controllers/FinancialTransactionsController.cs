@@ -39,7 +39,7 @@ public sealed class FinancialTransactionsController(
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetFundingsAsync(int? organizationId, [FromQuery] FinancialTransactionsListRequest? request, CancellationToken cancellationToken)
     {
-        if (!ValidateOrganizationId(organizationId))
+        if (!this.TryValidateOrganizationId(organizationId, out var organizationIdValue))
         {
             return ValidationProblem(ModelState);
         }
@@ -50,7 +50,7 @@ public sealed class FinancialTransactionsController(
         }
 
         var paginationRequest = request ?? new FinancialTransactionsListRequest();
-        var command = new FundingsCommand(organizationId.Value, paginationRequest.ToKiotaModel());
+        var command = new FundingsCommand(organizationIdValue, paginationRequest.ToKiotaModel());
         var response = await _fundingsCommandHandler.HandleAsync(command, cancellationToken).ConfigureAwait(false);
         if (response is null)
         {
@@ -74,7 +74,7 @@ public sealed class FinancialTransactionsController(
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetInvestmentsAsync(int? organizationId, [FromQuery] FinancialTransactionsListRequest? request, CancellationToken cancellationToken)
     {
-        if (!ValidateOrganizationId(organizationId))
+        if (!this.TryValidateOrganizationId(organizationId, out var organizationIdValue))
         {
             return ValidationProblem(ModelState);
         }
@@ -85,7 +85,7 @@ public sealed class FinancialTransactionsController(
         }
 
         var paginationRequest = request ?? new FinancialTransactionsListRequest();
-        var command = new InvestmentsCommand(organizationId.Value, paginationRequest.ToKiotaModel());
+        var command = new InvestmentsCommand(organizationIdValue, paginationRequest.ToKiotaModel());
         var response = await _investmentsCommandHandler.HandleAsync(command, cancellationToken).ConfigureAwait(false);
         if (response is null)
         {
@@ -108,12 +108,12 @@ public sealed class FinancialTransactionsController(
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetPortfolioExitsAsync(int? organizationId, CancellationToken cancellationToken)
     {
-        if (!ValidateOrganizationId(organizationId))
+        if (!this.TryValidateOrganizationId(organizationId, out var organizationIdValue))
         {
             return ValidationProblem(ModelState);
         }
 
-        var command = new PortfolioExitsCommand(organizationId.Value);
+        var command = new PortfolioExitsCommand(organizationIdValue);
         var response = await _portfolioExitsCommandHandler.HandleAsync(command, cancellationToken).ConfigureAwait(false);
         if (response is null)
         {
@@ -136,12 +136,12 @@ public sealed class FinancialTransactionsController(
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetBusinessRelationshipsAsync(int? organizationId, CancellationToken cancellationToken)
     {
-        if (!ValidateOrganizationId(organizationId))
+        if (!this.TryValidateOrganizationId(organizationId, out var organizationIdValue))
         {
             return ValidationProblem(ModelState);
         }
 
-        var command = new BusinessRelationshipsCommand(organizationId.Value);
+        var command = new BusinessRelationshipsCommand(organizationIdValue);
         var response = await _businessRelationshipsCommandHandler.HandleAsync(command, cancellationToken).ConfigureAwait(false);
         if (response is null)
         {
@@ -165,7 +165,7 @@ public sealed class FinancialTransactionsController(
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetManagementAndBoardAsync(int? organizationId, [FromQuery] ManagementAndBoardRequest? request, CancellationToken cancellationToken)
     {
-        if (!ValidateOrganizationId(organizationId))
+        if (!this.TryValidateOrganizationId(organizationId, out var organizationIdValue))
         {
             return ValidationProblem(ModelState);
         }
@@ -181,7 +181,7 @@ public sealed class FinancialTransactionsController(
         }
 
         var managementRequest = request ?? new ManagementAndBoardRequest();
-        var command = new ManagementAndBoardCommand(organizationId.Value, managementRequest.ToKiotaModel());
+        var command = new ManagementAndBoardCommand(organizationIdValue, managementRequest.ToKiotaModel());
         var response = await _managementAndBoardCommandHandler.HandleAsync(command, cancellationToken).ConfigureAwait(false);
         if (response is null)
         {
@@ -191,16 +191,6 @@ public sealed class FinancialTransactionsController(
         return Ok(response);
     }
 
-    private bool ValidateOrganizationId(int? organizationId)
-    {
-        if (!organizationId.HasValue || organizationId.Value <= 0)
-        {
-            ModelState.AddModelError(nameof(organizationId), "The organization identifier must be a positive integer.");
-            return false;
-        }
-
-        return true;
-    }
 }
 
 /// <summary>

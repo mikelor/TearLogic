@@ -29,15 +29,14 @@ public sealed class FirmographicsController
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetAsync(int? organizationId, CancellationToken cancellationToken)
     {
-        if (!organizationId.HasValue || organizationId.Value <= 0)
+        if (!this.TryValidateOrganizationId(organizationId, out var organizationIdValue))
         {
-            ModelState.AddModelError(nameof(organizationId), "The organization identifier must be a positive integer.");
             return ValidationProblem(ModelState);
         }
 
         var requestBody = new FirmographicsRequestBody
         {
-            OrgIds = new List<int?> { organizationId.Value },
+            OrgIds = new List<int?> { organizationIdValue },
             Limit = 1
         };
 
