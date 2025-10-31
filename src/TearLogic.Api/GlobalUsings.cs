@@ -6,6 +6,7 @@ global using Polly;
 global using Polly.Contrib.WaitAndRetry;
 global using Polly.Extensions.Http;
 global using TearLogic.Api.CBInsights.Commands;
+global using TearLogic.Api.CBInsights.Commands.FinancialTransactions;
 global using TearLogic.Api.CBInsights.Commands.Firmographics;
 global using TearLogic.Api.CBInsights.Commands.OrganizationLookup;
 global using TearLogic.Api.CBInsights.Configuration;

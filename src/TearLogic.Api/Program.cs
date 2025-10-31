@@ -1,5 +1,7 @@
+using System.Globalization;
 using System.IO;
 using System.Reflection;
+using Microsoft.Extensions.Primitives;
 using Microsoft.OpenApi.Models;
 using TearLogic.Api.CBInsights.Controllers;
 
@@ -61,6 +63,11 @@ builder.Services.AddSingleton<ICBInsightsRequestAdapterFactory, CBInsightsReques
 builder.Services.AddScoped<ICBInsightsClient, CBInsightsClient>();
 builder.Services.AddScoped<IOrganizationLookupCommandHandler, OrganizationLookupCommandHandler>();
 builder.Services.AddScoped<IFirmographicsCommandHandler, FirmographicsCommandHandler>();
+builder.Services.AddScoped<IFundingsCommandHandler, FundingsCommandHandler>();
+builder.Services.AddScoped<IInvestmentsCommandHandler, InvestmentsCommandHandler>();
+builder.Services.AddScoped<IPortfolioExitsCommandHandler, PortfolioExitsCommandHandler>();
+builder.Services.AddScoped<IBusinessRelationshipsCommandHandler, BusinessRelationshipsCommandHandler>();
+builder.Services.AddScoped<IManagementAndBoardCommandHandler, ManagementAndBoardCommandHandler>();
 
 builder.Services.AddHttpClient(CBInsightsHttpClientNames.Authorization, (provider, client) =>
 {
@@ -90,7 +97,7 @@ if (app.Environment.IsDevelopment())
     {
         options.PreSerializeFilters.Add((swaggerDoc, httpReq) =>
         {
-            swaggerDoc.Servers = new List<OpenApiServer>
+            var servers = new List<OpenApiServer>
             {
                 new OpenApiServer
                 {
@@ -101,13 +108,57 @@ if (app.Environment.IsDevelopment())
                 {
                     Url = "https://sandbox-api.example.com:8443/v1", // QA API URL
                     Description = "Sandbox Server (Test Data)"
-                },
-                new OpenApiServer
-                {
-                    Url = $"{httpReq.Scheme}://{httpReq.Host.Value}", // Dynamically set from current request
-                    Description = "Development Server (Local Host)"
                 }
             };
+
+            var scheme = httpReq.Headers.TryGetValue("X-Forwarded-Proto", out var forwardedProto) && !StringValues.IsNullOrEmpty(forwardedProto)
+                ? forwardedProto.ToString()
+                : httpReq.Scheme;
+
+            var host = httpReq.Headers.TryGetValue("X-Forwarded-Host", out var forwardedHost) && !StringValues.IsNullOrEmpty(forwardedHost)
+                ? forwardedHost.ToString()
+                : httpReq.Host.Host;
+
+            var port = httpReq.Headers.TryGetValue("X-Forwarded-Port", out var forwardedPort) && !StringValues.IsNullOrEmpty(forwardedPort)
+                ? forwardedPort.ToString()
+                : httpReq.Host.Port?.ToString(CultureInfo.InvariantCulture);
+
+            var hostWithPort = !string.IsNullOrWhiteSpace(host)
+                ? host
+                : httpReq.Host.Value;
+
+            if (!string.IsNullOrWhiteSpace(port) && host is not null && !host.Contains(':', StringComparison.Ordinal))
+            {
+                hostWithPort = $"{host}:{port}";
+            }
+
+            var requestUrl = string.IsNullOrWhiteSpace(hostWithPort)
+                ? null
+                : $"{scheme}://{hostWithPort}";
+
+            var comparisonHost = host ?? httpReq.Host.Host;
+            var isDevTunnelHost = !string.IsNullOrWhiteSpace(comparisonHost) && comparisonHost.Contains(".devtunnels.ms", StringComparison.OrdinalIgnoreCase);
+
+            if (!string.IsNullOrWhiteSpace(requestUrl))
+            {
+                servers.Add(new OpenApiServer
+                {
+                    Url = requestUrl,
+                    Description = isDevTunnelHost ? "Development Server (Visual Studio Dev Tunnel)" : "Development Server (Local Host)"
+                });
+            }
+
+            var devTunnelUrl = Environment.GetEnvironmentVariable("VS_TUNNEL_URL");
+            if (!string.IsNullOrWhiteSpace(devTunnelUrl) && !string.Equals(devTunnelUrl, requestUrl, StringComparison.OrdinalIgnoreCase))
+            {
+                servers.Add(new OpenApiServer
+                {
+                    Url = devTunnelUrl,
+                    Description = "Development Server (Visual Studio Dev Tunnel)"
+                });
+            }
+
+            swaggerDoc.Servers = servers;
         });
     });
     app.UseSwaggerUI(static options =>
