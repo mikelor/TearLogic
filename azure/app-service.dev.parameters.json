@@ -1,0 +1,40 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "appServicePlanName": {
+      "value": "tl-dev-appservice-plan"
+    },
+    "appServicePlanSkuName": {
+      "value": "B1"
+    },
+    "appServicePlanSkuTier": {
+      "value": "Basic"
+    },
+    "appServicePlanCapacity": {
+      "value": 1
+    },
+    "appServiceName": {
+      "value": "tl-dev-api"
+    },
+    "appSettings": {
+      "value": [
+        {
+          "name": "ASPNETCORE_ENVIRONMENT",
+          "value": "Development"
+        },
+        {
+          "name": "APPLICATIONINSIGHTS_CONNECTION_STRING",
+          "value": ""
+        }
+      ]
+    },
+    "appServiceTags": {
+      "value": {
+        "Environment": "Development",
+        "Workload": "TearLogic",
+        "Owner": "Platform"
+      }
+    }
+  }
+}
