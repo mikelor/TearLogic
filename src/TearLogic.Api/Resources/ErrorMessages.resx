@@ -39,4 +39,7 @@
   <data name="ManagementAndBoardRequestFailed" xml:space="preserve">
     <value>CB Insights management and board request failed.</value>
   </data>
+  <data name="OutlookRequestFailed" xml:space="preserve">
+    <value>CB Insights outlook request failed.</value>
+  </data>
 </root>

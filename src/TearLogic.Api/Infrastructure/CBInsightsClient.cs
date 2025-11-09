@@ -8,6 +8,7 @@ using TearLogic.Clients.Models.V2FinancialTransactions;
 using TearLogic.Clients.Models.V2Firmographics;
 using TearLogic.Clients.Models.V2ManagementAndBoard;
 using TearLogic.Clients.Models.V2OrganizationLookup;
+using TearLogic.Clients.Models.V2Outlook;
 
 namespace TearLogic.Api.CBInsights.Infrastructure;
 
@@ -298,6 +299,46 @@ public sealed class CBInsightsClient
         catch (Exception exception)
         {
             var errorMessage = _errorMessageProvider.GetString("ManagementAndBoardRequestFailed") ?? "CB Insights management and board request failed.";
+            _logger.LogError(exception, errorMessage);
+            throw;
+        }
+    }
+
+    /// <inheritdoc />
+    public async Task<OutlookResponse?> GetOutlookAsync(int organizationId, CancellationToken cancellationToken)
+    {
+        if (organizationId <= 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(organizationId), organizationId, "The organization identifier must be a positive integer.");
+        }
+
+        var client = await CreateClientAsync(cancellationToken).ConfigureAwait(false);
+        var message = _logMessageProvider.GetString("OutlookRequestStarted");
+        if (!string.IsNullOrWhiteSpace(message))
+        {
+            _logger.LogInformation(message);
+        }
+
+        try
+        {
+            var response = await client.V2.Organizations[organizationId].Outlook.PostAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
+            message = _logMessageProvider.GetString("OutlookRequestCompleted");
+            if (!string.IsNullOrWhiteSpace(message))
+            {
+                _logger.LogInformation(message);
+            }
+
+            return response;
+        }
+        catch (ErrorWithCode exception)
+        {
+            var errorMessage = _errorMessageProvider.GetString("OutlookRequestFailed") ?? "CB Insights outlook request failed.";
+            _logger.LogError(exception, errorMessage + " Code: {Code}", exception.Error);
+            throw;
+        }
+        catch (Exception exception)
+        {
+            var errorMessage = _errorMessageProvider.GetString("OutlookRequestFailed") ?? "CB Insights outlook request failed.";
             _logger.LogError(exception, errorMessage);
             throw;
         }

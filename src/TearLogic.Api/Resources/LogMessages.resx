@@ -60,4 +60,10 @@
   <data name="ManagementAndBoardRequestCompleted" xml:space="preserve">
     <value>Management and board request completed successfully.</value>
   </data>
+  <data name="OutlookRequestStarted" xml:space="preserve">
+    <value>Submitting outlook request to CB Insights.</value>
+  </data>
+  <data name="OutlookRequestCompleted" xml:space="preserve">
+    <value>Outlook request completed successfully.</value>
+  </data>
 </root>
