@@ -1,10 +1,15 @@
 # TearLogic Developer Guide
 
-This document provides a high-level tour of the source tree and explains how the generated CB Insights client is produced.
+Version 1 of the TearLogic CB Insights integration ships a production-ready REST surface, typed Kiota client, and agent documentation that collectively let us stand up competitive-intelligence workflows on top of CB Insights data.
+
+## Version 1 Highlights
+
+- **Comprehensive organization discovery.** `OrganizationLookupController` supports name-based discovery (single name, multi-name, and raw lookup requests) with model validation so downstream callers get consistently shaped `OrgLookupResponse` payloads.【F:src/TearLogic.Api/Controllers/OrganizationLookupController.cs†L9-L107】
+- **360° company context.** Firmographics, financial transactions, relationships, scouting reports, and outlook endpoints expose the data required to build the TearLogic tear sheet without bespoke CB Insights calls.【F:src/TearLogic.Api/Controllers/FirmographicsController.cs†L9-L103】【F:src/TearLogic.Api/Controllers/FinancialTransactionsController.cs†L9-L120】【F:src/TearLogic.Api/Controllers/OrganizationRelationshipsController.cs†L9-L81】【F:src/TearLogic.Api/Controllers/ScoutingReportController.cs†L9-L148】【F:src/TearLogic.Api/Controllers/OutlookController.cs†L9-L88】
+- **Conversational access with streaming.** The ChatCbi endpoints provide both standard and streaming responses so conversational clients can choose between low-latency chunks or a single response body.【F:src/TearLogic.Api/Controllers/ChatCbiController.cs†L9-L81】
+- **Shared command and validation primitives.** Request DTOs translate HTTP payloads into Kiota models, while reusable command handlers, controller extensions, and resource-backed logging centralize cross-cutting behaviors.【F:src/TearLogic.Api/Requests/OrganizationLookupRequest.cs†L1-L64】【F:src/TearLogic.Api/Commands/CommandHandler.cs†L1-L31】【F:src/TearLogic.Api/Controllers/Extensions/ControllerValidationExtensions.cs†L9-L35】【F:src/TearLogic.Api/Resources/LogMessages.resx†L1-L200】
 
 ## Solution Layout
-
-The solution root contains several developer-facing projects:
 
 | Folder | Description |
 | --- | --- |
@@ -16,25 +21,44 @@ The solution root contains several developer-facing projects:
 
 ## TearLogic.Api
 
-`TearLogic.Api` is an ASP.NET Core web API responsible for normalizing CB Insights access behind TearLogic endpoints:
+### Composition & Cross-cutting Services
 
-* **Composition** – `Program.cs` wires up controllers, Swagger, and strongly-typed options that validate CB Insights credentials at startup, and registers typed `HttpClient` instances that share Polly retry/circuit-breaker policies.【F:src/TearLogic.Api/Program.cs†L1-L87】
-* **Configuration** – `Configuration/CBInsightsOptions.cs` stores the CB Insights base URL, endpoint paths, credentials, and token cache duration, with data annotation validation to protect against misconfiguration.【F:src/TearLogic.Api/Configuration/CBInsightsOptions.cs†L1-L35】
-* **Command layer** – `Commands/` defines a reusable `CommandHandler<TCommand, TResult>` base and feature-specific command models to keep controller logic thin and testable.【F:src/TearLogic.Api/Commands/CommandHandler.cs†L1-L31】
-* **Controllers** – `Controllers/` surface organization lookup and firmographics endpoints that call into command handlers, returning TearLogic-specific responses.
-* **Infrastructure** – `Infrastructure/CBInsightsClient.cs` encapsulates Microsoft Kiota request adapters, authentication, and logging/error handling, exposing async methods for organization and firmographics lookups.【F:src/TearLogic.Api/Infrastructure/CBInsightsClient.cs†L1-L120】 Supporting infrastructure includes cached token acquisition, Polly policies, and constants in the same folder.
-* **OpenAPI definition** – `OpenApi/tearlogic-api.openapi.yaml` captures the TearLogic API contract for documentation and client generation.
-* **Diagnostics & Resources** – `Diagnostics/ResourceProviders.cs` and the `Resources/` folder deliver localized log/error message strings consumed across the API.
+`Program.cs` wires up controller discovery, Swagger/OpenAPI metadata, localization-backed logging providers, strongly-typed CB Insights options, resilient HTTP clients (retry + circuit breaker), and the command-handler dependency graph that powers each endpoint.【F:src/TearLogic.Api/Program.cs†L9-L115】 Options validation ensures the CB Insights client ID/secret are present before the API starts.【F:src/TearLogic.Api/Program.cs†L41-L57】【F:src/TearLogic.Api/Configuration/CBInsightsOptions.cs†L1-L35】
+
+### Feature Map
+
+| Area | Controller | Key Routes |
+| --- | --- | --- |
+| Organization discovery | `OrganizationLookupController` | `POST /api/cbinsights/organizations`, `GET /api/cbinsights/organizations`, `GET /api/cbinsights/organizations/{organization}` |
+| Firmographics | `FirmographicsController` | `POST /api/cbinsights/firmographics` |
+| Financial transactions | `FinancialTransactionsController` | `GET /api/cbinsights/organizations/{id}/financialtransactions/{fundings|investments|portfolioexits}` |
+| Relationships & leadership | `OrganizationRelationshipsController` | `GET /api/cbinsights/organizations/{id}/businessrelationships`, `GET /api/cbinsights/organizations/{id}/managementandboard` |
+| Scouting reports | `ScoutingReportController` | `POST /api/cbinsights/organizations/{id}/scoutingreport`, `POST /api/cbinsights/organizations/{id}/scoutingreport/stream` |
+| Outlook & scoring | `OutlookController` | `POST /api/cbinsights/organizations/{id}/outlook`, `POST /api/cbinsights/organizations/{id}/outlook/stream`, `GET /api/cbinsights/organizations/{id}/mosaicscore` |
+| Conversational insights | `ChatCbiController` | `POST /api/cbinsights/chat`, `POST /api/cbinsights/chat/stream` |
+
+Each controller delegates to a dedicated command handler, letting us keep HTTP concerns thin while the handlers route requests through the shared `ICBInsightsClient`. Validation helpers (for example, verifying numeric identifiers) live in `Controllers/Extensions` so every endpoint enforces consistent rules.【F:src/TearLogic.Api/Controllers/OrganizationLookupController.cs†L9-L107】【F:src/TearLogic.Api/Controllers/FirmographicsController.cs†L9-L103】【F:src/TearLogic.Api/Controllers/FinancialTransactionsController.cs†L9-L120】【F:src/TearLogic.Api/Controllers/OrganizationRelationshipsController.cs†L9-L81】【F:src/TearLogic.Api/Controllers/ScoutingReportController.cs†L9-L148】【F:src/TearLogic.Api/Controllers/OutlookController.cs†L9-L88】【F:src/TearLogic.Api/Controllers/ChatCbiController.cs†L9-L81】【F:src/TearLogic.Api/Controllers/Extensions/ControllerValidationExtensions.cs†L9-L35】 Request objects in `Requests/` project the wire format into Kiota-friendly models that the handlers consume.【F:src/TearLogic.Api/Requests/OrganizationLookupRequest.cs†L1-L64】【F:src/TearLogic.Api/Requests/FinancialTransactionsListRequest.cs†L1-L70】【F:src/TearLogic.Api/Requests/ChatCbiRequest.cs†L1-L82】【F:src/TearLogic.Api/Requests/ManagementAndBoardRequest.cs†L1-L78】
+
+### Infrastructure & CB Insights Integration
+
+`Infrastructure/CBInsightsClient.cs` centralizes outbound calls. It builds Kiota request adapters, caches OAuth tokens, applies resilience policies, emits localized log messages, and exposes async methods for each dataset (firmographics, transactions, scouting, outlook, chat, etc.).【F:src/TearLogic.Api/Infrastructure/CBInsightsClient.cs†L19-L266】 Supporting factories manage authentication (`CBInsightsAuthenticationProvider`, `CBInsightsTokenProvider`, and `CBInsightsRequestAdapterFactory`) and leverage the same configuration and HTTP clients registered in `Program.cs`.【F:src/TearLogic.Api/Infrastructure/CBInsightsAuthenticationProvider.cs†L1-L120】【F:src/TearLogic.Api/Infrastructure/CBInsightsTokenProvider.cs†L1-L160】【F:src/TearLogic.Api/Infrastructure/CBInsightsRequestAdapterFactory.cs†L1-L111】
 
 ## TearLogic.Clients and Kiota
 
-`TearLogic.Clients` contains the generated C# client for the CB Insights platform:
+`TearLogic.Clients` stores the upstream OpenAPI description and the generated Kiota SDK under `kiota/`. `TearLogic.Clients.csproj` packages these models so `TearLogic.Api` (and any future consumers) can reuse a single typed surface for CB Insights operations.【F:src/TearLogic.Clients/TearLogic.Clients.csproj†L1-L45】 Regenerate the client by running `kiota-cbinsights.cmd` from the `src/` directory; the script invokes `kiota generate` and then prints schema metadata via `kiota info`.【F:src/kiota-cbinsights.cmd†L1-L2】
 
-* **Source of truth** – The folder stores the upstream `cbinsights_api_v2_openapi3.yaml` and the downloaded `cbinsights_api_v2.json` reference files alongside the generated Kiota output under `kiota/`.
-* **Project file** – `TearLogic.Clients.csproj` exposes the Kiota-generated types as a .NET class library that other projects (e.g., `TearLogic.Api`) can reference.
-* **Regeneration workflow** – Run `kiota-cbinsights.cmd` from the `src/` directory to recreate the client. The script performs two steps: it invokes `kiota generate` with the CB Insights OpenAPI URL, targeting the `TearLogic.Clients` namespace and writing output into `TearLogic.Clients/kiota`, and then runs `kiota info` to display metadata for the downloaded description.【F:src/kiota-cbinsights.cmd†L1-L2】 Ensure the Kiota CLI is installed and authenticated before running the script.
+## Local Development
 
-After regeneration, rebuild the solution so `TearLogic.Api` can pick up any surface changes in the `ICBInsightsClient` abstractions.
+1. Restore and build the solution:
+   ```bash
+   dotnet build TearLogic.slnx
+   ```
+2. Provide CB Insights credentials via user secrets or environment variables (`CBInsights:ClientId`, `CBInsights:ClientSecret`, `CBInsights:BaseUrl`, etc.) before launching the API.【F:src/TearLogic.Api/Program.cs†L41-L57】【F:src/TearLogic.Api/appsettings.json†L9-L18】
+3. Run the API locally:
+   ```bash
+   dotnet run --project TearLogic.Api
+   ```
+   Swagger UI will be available in development environments with pre-populated server definitions for production, sandbox, and local/dev tunnel scenarios.【F:src/TearLogic.Api/Program.cs†L59-L115】
 
 ## Agent Documentation
 
@@ -42,6 +66,6 @@ The `Agent/README.md` file offers step-by-step guidance for constructing the CB 
 
 ## Additional Notes for Developers
 
-* Keep CB Insights credentials in secure configuration providers; the defaults in `appsettings.json` are placeholders.
-* When adding new CB Insights endpoints, prefer extending the Kiota client rather than writing raw HTTP calls, and register additional command handlers to mirror the existing architecture.
-* Update the OpenAPI document and regenerate client stubs whenever TearLogic endpoints change so documentation stays in sync.
+- Keep CB Insights credentials in secure configuration providers; the defaults in `appsettings.json` are placeholders.【F:src/TearLogic.Api/appsettings.json†L9-L18】
+- When adding new CB Insights endpoints, extend the Kiota client or the `ICBInsightsClient` rather than issuing raw HTTP calls, and register additional command handlers to mirror the existing architecture.【F:src/TearLogic.Api/Program.cs†L72-L107】【F:src/TearLogic.Api/Infrastructure/CBInsightsClient.cs†L19-L266】
+- Update the OpenAPI document and regenerate client stubs whenever TearLogic endpoints change so documentation stays in sync.【F:src/TearLogic.Api/OpenApi/tearlogic-api.openapi.yaml†L1-L200】
