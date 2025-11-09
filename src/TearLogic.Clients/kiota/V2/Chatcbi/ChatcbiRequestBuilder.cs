@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using System.Threading;
 using System;
 using TearLogic.Clients.Models.Common;
-using TearLogic.Clients.Models.V2ChatCBI;
+using TearLogic.Clients.Models.V2ChatCbi;
 namespace TearLogic.Clients.V2.Chatcbi
 {
     /// <summary>
@@ -37,7 +37,7 @@ namespace TearLogic.Clients.V2.Chatcbi
         /// <summary>
         /// See https://api-docs.cbinsights.com/portal/docs/CBI-API/ChatCBI for more information and usage details. This endpoint uses generative AI and may make mistakes. Always verify pertinent information.
         /// </summary>
-        /// <returns>A <see cref="global::TearLogic.Clients.Models.V2ChatCBI.ChatCBIResponse"/></returns>
+        /// <returns>A <see cref="global::TearLogic.Clients.Models.V2ChatCbi.ChatCbiResponse"/></returns>
         /// <param name="body">The request body</param>
         /// <param name="cancellationToken">Cancellation token to use when cancelling requests</param>
         /// <param name="requestConfiguration">Configuration for the request such as headers, query parameters, and middleware options.</param>
@@ -47,11 +47,11 @@ namespace TearLogic.Clients.V2.Chatcbi
         /// <exception cref="global::TearLogic.Clients.Models.Common.ErrorWithCode">When receiving a 500 status code</exception>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public async Task<global::TearLogic.Clients.Models.V2ChatCBI.ChatCBIResponse?> PostAsync(global::TearLogic.Clients.Models.V2ChatCBI.ChatCBIRequest body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<global::TearLogic.Clients.Models.V2ChatCbi.ChatCbiResponse?> PostAsync(global::TearLogic.Clients.Models.V2ChatCbi.ChatCbiRequest body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #nullable restore
 #else
-        public async Task<global::TearLogic.Clients.Models.V2ChatCBI.ChatCBIResponse> PostAsync(global::TearLogic.Clients.Models.V2ChatCBI.ChatCBIRequest body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<global::TearLogic.Clients.Models.V2ChatCbi.ChatCbiResponse> PostAsync(global::TearLogic.Clients.Models.V2ChatCbi.ChatCbiRequest body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #endif
             if(ReferenceEquals(body, null)) throw new ArgumentNullException(nameof(body));
@@ -63,7 +63,7 @@ namespace TearLogic.Clients.V2.Chatcbi
                 { "424", global::TearLogic.Clients.Models.Common.ErrorWithCode.CreateFromDiscriminatorValue },
                 { "500", global::TearLogic.Clients.Models.Common.ErrorWithCode.CreateFromDiscriminatorValue },
             };
-            return await RequestAdapter.SendAsync<global::TearLogic.Clients.Models.V2ChatCBI.ChatCBIResponse>(requestInfo, global::TearLogic.Clients.Models.V2ChatCBI.ChatCBIResponse.CreateFromDiscriminatorValue, errorMapping, cancellationToken).ConfigureAwait(false);
+            return await RequestAdapter.SendAsync<global::TearLogic.Clients.Models.V2ChatCbi.ChatCbiResponse>(requestInfo, global::TearLogic.Clients.Models.V2ChatCbi.ChatCbiResponse.CreateFromDiscriminatorValue, errorMapping, cancellationToken).ConfigureAwait(false);
         }
         /// <summary>
         /// See https://api-docs.cbinsights.com/portal/docs/CBI-API/ChatCBI for more information and usage details. This endpoint uses generative AI and may make mistakes. Always verify pertinent information.
@@ -73,11 +73,11 @@ namespace TearLogic.Clients.V2.Chatcbi
         /// <param name="requestConfiguration">Configuration for the request such as headers, query parameters, and middleware options.</param>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public RequestInformation ToPostRequestInformation(global::TearLogic.Clients.Models.V2ChatCBI.ChatCBIRequest body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default)
+        public RequestInformation ToPostRequestInformation(global::TearLogic.Clients.Models.V2ChatCbi.ChatCbiRequest body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default)
         {
 #nullable restore
 #else
-        public RequestInformation ToPostRequestInformation(global::TearLogic.Clients.Models.V2ChatCBI.ChatCBIRequest body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default)
+        public RequestInformation ToPostRequestInformation(global::TearLogic.Clients.Models.V2ChatCbi.ChatCbiRequest body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default)
         {
 #endif
             if(ReferenceEquals(body, null)) throw new ArgumentNullException(nameof(body));

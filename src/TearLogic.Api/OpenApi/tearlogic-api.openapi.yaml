@@ -132,6 +132,77 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/ProblemDetails'
+  /api/cbinsights/chat:
+    post:
+      summary: Request a ChatCbi response
+      description: |
+        Sends a message to CB Insights ChatCbi and returns the generated response. Use the optional `chatId`
+        field to continue an existing conversation. The response message content is returned in Markdown format.
+      tags:
+        - ChatCbi
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChatCbiRequest'
+      responses:
+        '200':
+          description: ChatCbi response received.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatCbiResponse'
+        '400':
+          description: Validation error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '404':
+          description: ChatCbi response unavailable
+        '500':
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+  /api/cbinsights/chat/stream:
+    post:
+      summary: Stream a ChatCbi response
+      description: |
+        Sends a message to CB Insights ChatCbi and streams the response as JSON chunks using `Transfer-Encoding: chunked`.
+        Each chunk expands the previous payload until the full response is delivered. The receiver is responsible for
+        reconciling differences between chunks.
+      tags:
+        - ChatCbi
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChatCbiRequest'
+      responses:
+        '200':
+          description: Streaming ChatCbi response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatCbiResponse'
+        '400':
+          description: Validation error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '404':
+          description: ChatCbi response unavailable
+        '500':
+          description: Unexpected error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
 components:
   schemas:
     OrganizationLookupRequest:
@@ -238,4 +309,76 @@ components:
           type: string
         instance:
           type: string
+      additionalProperties: true
+    ChatCbiRequest:
+      type: object
+      description: Message payload used to invoke ChatCbi.
+      properties:
+        chatId:
+          type: string
+          description: Optional conversation identifier returned from a previous ChatCbi response.
+        message:
+          type: string
+          description: Message to send to ChatCbi. Markdown formatting is supported.
+      required:
+        - message
+      additionalProperties: false
+    ChatCbiResponse:
+      type: object
+      description: ChatCbi response payload.
+      properties:
+        chatID:
+          type: string
+          description: Identifier for the conversation.
+        message:
+          type: string
+          description: ChatCbi response message in Markdown format.
+        relatedContent:
+          type: array
+          description: Related references suggested by ChatCbi.
+          items:
+            $ref: '#/components/schemas/ChatCbiResult'
+        sources:
+          type: array
+          description: Sources used to generate the response.
+          items:
+            $ref: '#/components/schemas/ChatCbiSource'
+        suggestions:
+          type: array
+          description: Suggested follow-up questions.
+          items:
+            type: string
+        title:
+          type: string
+          description: Title generated for the conversation.
+      additionalProperties: true
+    ChatCbiResult:
+      type: object
+      description: Related content entry referenced in a ChatCbi response.
+      properties:
+        date:
+          type: string
+          description: Date associated with the referenced content.
+        thumbnailUrl:
+          type: string
+          format: uri
+          description: Thumbnail image URL.
+        title:
+          type: string
+          description: Title of the referenced content.
+        url:
+          type: string
+          format: uri
+          description: URL of the referenced content.
+      additionalProperties: true
+    ChatCbiSource:
+      type: object
+      description: Source entry used to construct the ChatCbi response.
+      properties:
+        result:
+          $ref: '#/components/schemas/ChatCbiResult'
+        sourceIndex:
+          type: integer
+          format: int32
+          description: Index of the source in the ChatCbi response.
       additionalProperties: true

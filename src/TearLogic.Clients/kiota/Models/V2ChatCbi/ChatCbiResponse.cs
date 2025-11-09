@@ -5,11 +5,11 @@ using Microsoft.Kiota.Abstractions.Serialization;
 using System.Collections.Generic;
 using System.IO;
 using System;
-namespace TearLogic.Clients.Models.V2ChatCBI
+namespace TearLogic.Clients.Models.V2ChatCbi
 {
     [global::System.CodeDom.Compiler.GeneratedCode("Kiota", "1.0.0")]
     #pragma warning disable CS1591
-    public partial class ChatCBIResponse : IAdditionalDataHolder, IParsable
+    public partial class ChatCbiResponse : IAdditionalDataHolder, IParsable
     #pragma warning restore CS1591
     {
         /// <summary>Stores additional data not described in the OpenAPI description found when deserializing. Can be used for serialization as well.</summary>
@@ -22,7 +22,7 @@ namespace TearLogic.Clients.Models.V2ChatCBI
 #else
         public string ChatID { get; set; }
 #endif
-        /// <summary>ChatCBI response to the message. Example is an excerpt.</summary>
+        /// <summary>ChatCbi response to the message. Example is an excerpt.</summary>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
         public string? Message { get; set; }
@@ -33,18 +33,18 @@ namespace TearLogic.Clients.Models.V2ChatCBI
         /// <summary>List of related references.</summary>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public List<global::TearLogic.Clients.Models.V2ChatCBI.Result>? RelatedContent { get; set; }
+        public List<global::TearLogic.Clients.Models.V2ChatCbi.Result>? RelatedContent { get; set; }
 #nullable restore
 #else
-        public List<global::TearLogic.Clients.Models.V2ChatCBI.Result> RelatedContent { get; set; }
+        public List<global::TearLogic.Clients.Models.V2ChatCbi.Result> RelatedContent { get; set; }
 #endif
         /// <summary>List of sources used to generate the response.</summary>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public List<global::TearLogic.Clients.Models.V2ChatCBI.Source>? Sources { get; set; }
+        public List<global::TearLogic.Clients.Models.V2ChatCbi.Source>? Sources { get; set; }
 #nullable restore
 #else
-        public List<global::TearLogic.Clients.Models.V2ChatCBI.Source> Sources { get; set; }
+        public List<global::TearLogic.Clients.Models.V2ChatCbi.Source> Sources { get; set; }
 #endif
         /// <summary>List of suggested follow-up questions.</summary>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
@@ -63,21 +63,21 @@ namespace TearLogic.Clients.Models.V2ChatCBI
         public string Title { get; set; }
 #endif
         /// <summary>
-        /// Instantiates a new <see cref="global::TearLogic.Clients.Models.V2ChatCBI.ChatCBIResponse"/> and sets the default values.
+        /// Instantiates a new <see cref="global::TearLogic.Clients.Models.V2ChatCbi.ChatCbiResponse"/> and sets the default values.
         /// </summary>
-        public ChatCBIResponse()
+        public ChatCbiResponse()
         {
             AdditionalData = new Dictionary<string, object>();
         }
         /// <summary>
         /// Creates a new instance of the appropriate class based on discriminator value
         /// </summary>
-        /// <returns>A <see cref="global::TearLogic.Clients.Models.V2ChatCBI.ChatCBIResponse"/></returns>
+        /// <returns>A <see cref="global::TearLogic.Clients.Models.V2ChatCbi.ChatCbiResponse"/></returns>
         /// <param name="parseNode">The parse node to use to read the discriminator value and create the object</param>
-        public static global::TearLogic.Clients.Models.V2ChatCBI.ChatCBIResponse CreateFromDiscriminatorValue(IParseNode parseNode)
+        public static global::TearLogic.Clients.Models.V2ChatCbi.ChatCbiResponse CreateFromDiscriminatorValue(IParseNode parseNode)
         {
             if(ReferenceEquals(parseNode, null)) throw new ArgumentNullException(nameof(parseNode));
-            return new global::TearLogic.Clients.Models.V2ChatCBI.ChatCBIResponse();
+            return new global::TearLogic.Clients.Models.V2ChatCbi.ChatCbiResponse();
         }
         /// <summary>
         /// The deserialization information for the current model
@@ -89,8 +89,8 @@ namespace TearLogic.Clients.Models.V2ChatCBI
             {
                 { "chatID", n => { ChatID = n.GetStringValue(); } },
                 { "message", n => { Message = n.GetStringValue(); } },
-                { "relatedContent", n => { RelatedContent = n.GetCollectionOfObjectValues<global::TearLogic.Clients.Models.V2ChatCBI.Result>(global::TearLogic.Clients.Models.V2ChatCBI.Result.CreateFromDiscriminatorValue)?.AsList(); } },
-                { "sources", n => { Sources = n.GetCollectionOfObjectValues<global::TearLogic.Clients.Models.V2ChatCBI.Source>(global::TearLogic.Clients.Models.V2ChatCBI.Source.CreateFromDiscriminatorValue)?.AsList(); } },
+                { "relatedContent", n => { RelatedContent = n.GetCollectionOfObjectValues<global::TearLogic.Clients.Models.V2ChatCbi.Result>(global::TearLogic.Clients.Models.V2ChatCbi.Result.CreateFromDiscriminatorValue)?.AsList(); } },
+                { "sources", n => { Sources = n.GetCollectionOfObjectValues<global::TearLogic.Clients.Models.V2ChatCbi.Source>(global::TearLogic.Clients.Models.V2ChatCbi.Source.CreateFromDiscriminatorValue)?.AsList(); } },
                 { "suggestions", n => { Suggestions = n.GetCollectionOfPrimitiveValues<string>()?.AsList(); } },
                 { "title", n => { Title = n.GetStringValue(); } },
             };
@@ -104,8 +104,8 @@ namespace TearLogic.Clients.Models.V2ChatCBI
             if(ReferenceEquals(writer, null)) throw new ArgumentNullException(nameof(writer));
             writer.WriteStringValue("chatID", ChatID);
             writer.WriteStringValue("message", Message);
-            writer.WriteCollectionOfObjectValues<global::TearLogic.Clients.Models.V2ChatCBI.Result>("relatedContent", RelatedContent);
-            writer.WriteCollectionOfObjectValues<global::TearLogic.Clients.Models.V2ChatCBI.Source>("sources", Sources);
+            writer.WriteCollectionOfObjectValues<global::TearLogic.Clients.Models.V2ChatCbi.Result>("relatedContent", RelatedContent);
+            writer.WriteCollectionOfObjectValues<global::TearLogic.Clients.Models.V2ChatCbi.Source>("sources", Sources);
             writer.WriteCollectionOfPrimitiveValues<string>("suggestions", Suggestions);
             writer.WriteStringValue("title", Title);
             writer.WriteAdditionalData(AdditionalData);
