@@ -74,7 +74,7 @@ public sealed class CBInsightsClient
     public async Task<FirmographicsResponse?> GetFirmographicsAsync(FirmographicsRequestBody request, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(request);
-        var client = await CreateClientAsync(cancellationToken).ConfigureAwait(false);
+        var (client, adapter) = await CreateClientContextAsync(cancellationToken).ConfigureAwait(false);
         var message = _logMessageProvider.GetString("FirmographicsLookupStarted");
         if (!string.IsNullOrWhiteSpace(message))
         {
@@ -195,7 +195,7 @@ public sealed class CBInsightsClient
             throw new ArgumentOutOfRangeException(nameof(organizationId), organizationId, "The organization identifier must be a positive integer.");
         }
 
-        var client = await CreateClientAsync(cancellationToken).ConfigureAwait(false);
+        var (client, adapter) = await CreateClientContextAsync(cancellationToken).ConfigureAwait(false);
         var message = _logMessageProvider.GetString("PortfolioExitsRequestStarted");
         if (!string.IsNullOrWhiteSpace(message))
         {
@@ -396,7 +396,7 @@ public sealed class CBInsightsClient
             throw new ArgumentOutOfRangeException(nameof(organizationId), organizationId, "The organization identifier must be a positive integer.");
         }
 
-        var client = await CreateClientAsync(cancellationToken).ConfigureAwait(false);
+        var (client, adapter) = await CreateClientContextAsync(cancellationToken).ConfigureAwait(false);
         var message = _logMessageProvider.GetString("ScoutingReportStreamRequestStarted");
         if (!string.IsNullOrWhiteSpace(message))
         {
