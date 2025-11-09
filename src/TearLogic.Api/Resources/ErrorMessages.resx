@@ -42,4 +42,10 @@
   <data name="OutlookRequestFailed" xml:space="preserve">
     <value>CB Insights outlook request failed.</value>
   </data>
+  <data name="ScoutingReportRequestFailed" xml:space="preserve">
+    <value>CB Insights scouting report request failed.</value>
+  </data>
+  <data name="ScoutingReportStreamRequestFailed" xml:space="preserve">
+    <value>CB Insights scouting report stream request failed.</value>
+  </data>
 </root>

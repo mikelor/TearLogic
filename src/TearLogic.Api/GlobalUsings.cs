@@ -9,6 +9,7 @@ global using TearLogic.Api.CBInsights.Commands;
 global using TearLogic.Api.CBInsights.Commands.FinancialTransactions;
 global using TearLogic.Api.CBInsights.Commands.Firmographics;
 global using TearLogic.Api.CBInsights.Commands.Outlook;
+global using TearLogic.Api.CBInsights.Commands.ScoutingReports;
 global using TearLogic.Api.CBInsights.Commands.OrganizationLookup;
 global using TearLogic.Api.CBInsights.Configuration;
 global using TearLogic.Api.CBInsights.Diagnostics;

@@ -66,4 +66,16 @@
   <data name="OutlookRequestCompleted" xml:space="preserve">
     <value>Outlook request completed successfully.</value>
   </data>
+  <data name="ScoutingReportRequestStarted" xml:space="preserve">
+    <value>Submitting scouting report request to CB Insights.</value>
+  </data>
+  <data name="ScoutingReportRequestCompleted" xml:space="preserve">
+    <value>Scouting report request completed successfully.</value>
+  </data>
+  <data name="ScoutingReportStreamRequestStarted" xml:space="preserve">
+    <value>Submitting scouting report stream request to CB Insights.</value>
+  </data>
+  <data name="ScoutingReportStreamRequestCompleted" xml:space="preserve">
+    <value>Scouting report stream request completed successfully.</value>
+  </data>
 </root>
