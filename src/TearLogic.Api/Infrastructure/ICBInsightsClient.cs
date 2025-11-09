@@ -3,6 +3,7 @@ using TearLogic.Clients.Models.V2FinancialTransactions;
 using TearLogic.Clients.Models.V2Firmographics;
 using TearLogic.Clients.Models.V2ManagementAndBoard;
 using TearLogic.Clients.Models.V2OrganizationLookup;
+using TearLogic.Clients.Models.V2Outlook;
 
 namespace TearLogic.Api.CBInsights.Infrastructure;
 
@@ -69,4 +70,12 @@ public interface ICBInsightsClient
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The management and board response.</returns>
     Task<ManagementAndBoardResponse?> GetManagementAndBoardAsync(int organizationId, ManagementAndBoardRequestBody request, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Retrieves outlook information for the specified organization.
+    /// </summary>
+    /// <param name="organizationId">The CB Insights organization identifier.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The outlook response.</returns>
+    Task<OutlookResponse?> GetOutlookAsync(int organizationId, CancellationToken cancellationToken);
 }

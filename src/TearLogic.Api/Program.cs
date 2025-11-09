@@ -68,6 +68,10 @@ builder.Services.AddScoped<IInvestmentsCommandHandler, InvestmentsCommandHandler
 builder.Services.AddScoped<IPortfolioExitsCommandHandler, PortfolioExitsCommandHandler>();
 builder.Services.AddScoped<IBusinessRelationshipsCommandHandler, BusinessRelationshipsCommandHandler>();
 builder.Services.AddScoped<IManagementAndBoardCommandHandler, ManagementAndBoardCommandHandler>();
+builder.Services.AddScoped<IOutlookCommandHandler, OutlookCommandHandler>();
+builder.Services.AddScoped<ICommercialMaturityCommandHandler, CommercialMaturityCommandHandler>();
+builder.Services.AddScoped<IExitProbabilityCommandHandler, ExitProbabilityCommandHandler>();
+builder.Services.AddScoped<IMosaicScoreCommandHandler, MosaicScoreCommandHandler>();
 
 builder.Services.AddHttpClient(CBInsightsHttpClientNames.Authorization, (provider, client) =>
 {
