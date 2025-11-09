@@ -414,7 +414,7 @@ public sealed class CBInsightsClient
 
         try
         {
-            var responseStream = await client.RequestAdapter.SendPrimitiveAsync<Stream>(requestInfo, errorMapping, cancellationToken).ConfigureAwait(false);
+            var responseStream = await adapter.SendPrimitiveAsync<Stream>(requestInfo, errorMapping, cancellationToken).ConfigureAwait(false);
             message = _logMessageProvider.GetString("ScoutingReportStreamRequestCompleted");
             if (!string.IsNullOrWhiteSpace(message))
             {
@@ -437,12 +437,19 @@ public sealed class CBInsightsClient
         }
     }
 
-    private async Task<CBInsightsApiClient> CreateClientAsync(CancellationToken cancellationToken)
+    private async Task<(CBInsightsApiClient Client, IRequestAdapter RequestAdapter)> CreateClientContextAsync(CancellationToken cancellationToken)
     {
         var options = _optionsMonitor.CurrentValue;
         var adapter = await _requestAdapterFactory.CreateAsync(cancellationToken).ConfigureAwait(false);
         adapter.BaseUrl = options.BaseUrl;
-        return new CBInsightsApiClient(adapter);
+        var client = new CBInsightsApiClient(adapter);
+        return (client, adapter);
+    }
+
+    private async Task<CBInsightsApiClient> CreateClientAsync(CancellationToken cancellationToken)
+    {
+        var (client, _) = await CreateClientContextAsync(cancellationToken).ConfigureAwait(false);
+        return client;
     }
 }
 
