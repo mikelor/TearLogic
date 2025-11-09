@@ -5,47 +5,41 @@ using Microsoft.Kiota.Abstractions.Serialization;
 using System.Collections.Generic;
 using System.IO;
 using System;
-namespace TearLogic.Clients.Models.V2ChatCBI
+namespace TearLogic.Clients.Models.V2ChatCbi
 {
     [global::System.CodeDom.Compiler.GeneratedCode("Kiota", "1.0.0")]
     #pragma warning disable CS1591
-    public partial class ChatCBIRequest : IAdditionalDataHolder, IParsable
+    public partial class Source : IAdditionalDataHolder, IParsable
     #pragma warning restore CS1591
     {
         /// <summary>Stores additional data not described in the OpenAPI description found when deserializing. Can be used for serialization as well.</summary>
         public IDictionary<string, object> AdditionalData { get; set; }
-        /// <summary>A unique id for the conversation, for use with multi-turn conversations. A chatID is returned in the initial response.</summary>
+        /// <summary>The result property</summary>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public string? ChatID { get; set; }
+        public global::TearLogic.Clients.Models.V2ChatCbi.Result? Result { get; set; }
 #nullable restore
 #else
-        public string ChatID { get; set; }
+        public global::TearLogic.Clients.Models.V2ChatCbi.Result Result { get; set; }
 #endif
-        /// <summary>The message to send.</summary>
-#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
-#nullable enable
-        public string? Message { get; set; }
-#nullable restore
-#else
-        public string Message { get; set; }
-#endif
+        /// <summary>The sourceIndex property</summary>
+        public int? SourceIndex { get; set; }
         /// <summary>
-        /// Instantiates a new <see cref="global::TearLogic.Clients.Models.V2ChatCBI.ChatCBIRequest"/> and sets the default values.
+        /// Instantiates a new <see cref="global::TearLogic.Clients.Models.V2ChatCbi.Source"/> and sets the default values.
         /// </summary>
-        public ChatCBIRequest()
+        public Source()
         {
             AdditionalData = new Dictionary<string, object>();
         }
         /// <summary>
         /// Creates a new instance of the appropriate class based on discriminator value
         /// </summary>
-        /// <returns>A <see cref="global::TearLogic.Clients.Models.V2ChatCBI.ChatCBIRequest"/></returns>
+        /// <returns>A <see cref="global::TearLogic.Clients.Models.V2ChatCbi.Source"/></returns>
         /// <param name="parseNode">The parse node to use to read the discriminator value and create the object</param>
-        public static global::TearLogic.Clients.Models.V2ChatCBI.ChatCBIRequest CreateFromDiscriminatorValue(IParseNode parseNode)
+        public static global::TearLogic.Clients.Models.V2ChatCbi.Source CreateFromDiscriminatorValue(IParseNode parseNode)
         {
             if(ReferenceEquals(parseNode, null)) throw new ArgumentNullException(nameof(parseNode));
-            return new global::TearLogic.Clients.Models.V2ChatCBI.ChatCBIRequest();
+            return new global::TearLogic.Clients.Models.V2ChatCbi.Source();
         }
         /// <summary>
         /// The deserialization information for the current model
@@ -55,8 +49,8 @@ namespace TearLogic.Clients.Models.V2ChatCBI
         {
             return new Dictionary<string, Action<IParseNode>>
             {
-                { "chatID", n => { ChatID = n.GetStringValue(); } },
-                { "message", n => { Message = n.GetStringValue(); } },
+                { "result", n => { Result = n.GetObjectValue<global::TearLogic.Clients.Models.V2ChatCbi.Result>(global::TearLogic.Clients.Models.V2ChatCbi.Result.CreateFromDiscriminatorValue); } },
+                { "sourceIndex", n => { SourceIndex = n.GetIntValue(); } },
             };
         }
         /// <summary>
@@ -66,8 +60,8 @@ namespace TearLogic.Clients.Models.V2ChatCBI
         public virtual void Serialize(ISerializationWriter writer)
         {
             if(ReferenceEquals(writer, null)) throw new ArgumentNullException(nameof(writer));
-            writer.WriteStringValue("chatID", ChatID);
-            writer.WriteStringValue("message", Message);
+            writer.WriteObjectValue<global::TearLogic.Clients.Models.V2ChatCbi.Result>("result", Result);
+            writer.WriteIntValue("sourceIndex", SourceIndex);
             writer.WriteAdditionalData(AdditionalData);
         }
     }

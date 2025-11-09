@@ -5,41 +5,63 @@ using Microsoft.Kiota.Abstractions.Serialization;
 using System.Collections.Generic;
 using System.IO;
 using System;
-namespace TearLogic.Clients.Models.V2ChatCBI
+namespace TearLogic.Clients.Models.V2ChatCbi
 {
     [global::System.CodeDom.Compiler.GeneratedCode("Kiota", "1.0.0")]
     #pragma warning disable CS1591
-    public partial class Source : IAdditionalDataHolder, IParsable
+    public partial class Result : IAdditionalDataHolder, IParsable
     #pragma warning restore CS1591
     {
         /// <summary>Stores additional data not described in the OpenAPI description found when deserializing. Can be used for serialization as well.</summary>
         public IDictionary<string, object> AdditionalData { get; set; }
-        /// <summary>The result property</summary>
+        /// <summary>The date property</summary>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public global::TearLogic.Clients.Models.V2ChatCBI.Result? Result { get; set; }
+        public string? Date { get; set; }
 #nullable restore
 #else
-        public global::TearLogic.Clients.Models.V2ChatCBI.Result Result { get; set; }
+        public string Date { get; set; }
 #endif
-        /// <summary>The sourceIndex property</summary>
-        public int? SourceIndex { get; set; }
+        /// <summary>The thumbnailUrl property</summary>
+#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+#nullable enable
+        public string? ThumbnailUrl { get; set; }
+#nullable restore
+#else
+        public string ThumbnailUrl { get; set; }
+#endif
+        /// <summary>The title property</summary>
+#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+#nullable enable
+        public string? Title { get; set; }
+#nullable restore
+#else
+        public string Title { get; set; }
+#endif
+        /// <summary>The url property</summary>
+#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+#nullable enable
+        public string? Url { get; set; }
+#nullable restore
+#else
+        public string Url { get; set; }
+#endif
         /// <summary>
-        /// Instantiates a new <see cref="global::TearLogic.Clients.Models.V2ChatCBI.Source"/> and sets the default values.
+        /// Instantiates a new <see cref="global::TearLogic.Clients.Models.V2ChatCbi.Result"/> and sets the default values.
         /// </summary>
-        public Source()
+        public Result()
         {
             AdditionalData = new Dictionary<string, object>();
         }
         /// <summary>
         /// Creates a new instance of the appropriate class based on discriminator value
         /// </summary>
-        /// <returns>A <see cref="global::TearLogic.Clients.Models.V2ChatCBI.Source"/></returns>
+        /// <returns>A <see cref="global::TearLogic.Clients.Models.V2ChatCbi.Result"/></returns>
         /// <param name="parseNode">The parse node to use to read the discriminator value and create the object</param>
-        public static global::TearLogic.Clients.Models.V2ChatCBI.Source CreateFromDiscriminatorValue(IParseNode parseNode)
+        public static global::TearLogic.Clients.Models.V2ChatCbi.Result CreateFromDiscriminatorValue(IParseNode parseNode)
         {
             if(ReferenceEquals(parseNode, null)) throw new ArgumentNullException(nameof(parseNode));
-            return new global::TearLogic.Clients.Models.V2ChatCBI.Source();
+            return new global::TearLogic.Clients.Models.V2ChatCbi.Result();
         }
         /// <summary>
         /// The deserialization information for the current model
@@ -49,8 +71,10 @@ namespace TearLogic.Clients.Models.V2ChatCBI
         {
             return new Dictionary<string, Action<IParseNode>>
             {
-                { "result", n => { Result = n.GetObjectValue<global::TearLogic.Clients.Models.V2ChatCBI.Result>(global::TearLogic.Clients.Models.V2ChatCBI.Result.CreateFromDiscriminatorValue); } },
-                { "sourceIndex", n => { SourceIndex = n.GetIntValue(); } },
+                { "date", n => { Date = n.GetStringValue(); } },
+                { "thumbnailUrl", n => { ThumbnailUrl = n.GetStringValue(); } },
+                { "title", n => { Title = n.GetStringValue(); } },
+                { "url", n => { Url = n.GetStringValue(); } },
             };
         }
         /// <summary>
@@ -60,8 +84,10 @@ namespace TearLogic.Clients.Models.V2ChatCBI
         public virtual void Serialize(ISerializationWriter writer)
         {
             if(ReferenceEquals(writer, null)) throw new ArgumentNullException(nameof(writer));
-            writer.WriteObjectValue<global::TearLogic.Clients.Models.V2ChatCBI.Result>("result", Result);
-            writer.WriteIntValue("sourceIndex", SourceIndex);
+            writer.WriteStringValue("date", Date);
+            writer.WriteStringValue("thumbnailUrl", ThumbnailUrl);
+            writer.WriteStringValue("title", Title);
+            writer.WriteStringValue("url", Url);
             writer.WriteAdditionalData(AdditionalData);
         }
     }

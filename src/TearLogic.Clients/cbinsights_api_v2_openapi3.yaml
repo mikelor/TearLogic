@@ -169,15 +169,15 @@ paths:
         for more information and usage details. This endpoint uses generative AI and
         may make mistakes. Always verify pertinent information.
       tags:
-      - ChatCBI
-      summary: Converse with the beta version of our AI chatbot ChatCBI
+      - ChatCbi
+      summary: Converse with the beta version of our AI chatbot ChatCbi
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/v2ChatCBI.ChatCBIResponse'
+                $ref: '#/components/schemas/v2ChatCbi.ChatCbiResponse'
         '400':
           description: Bad Request
           content:
@@ -220,7 +220,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/v2ChatCBI.ChatCBIRequest'
+              $ref: '#/components/schemas/v2ChatCbi.ChatCbiRequest'
   /v2/chatcbichunked:
     post:
       security:
@@ -229,8 +229,8 @@ paths:
         for more information and usage details. This endpoint uses generative AI and
         may make mistakes. Always verify pertinent information.
       tags:
-      - ChatCBI
-      summary: Converse with the beta version of our AI chatbot ChatCBI, which responds
+      - ChatCbi
+      summary: Converse with the beta version of our AI chatbot ChatCbi, which responds
         via incremental chunks
       responses:
         '200':
@@ -238,7 +238,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/v2ChatCBI.ChatCBIResponse'
+                $ref: '#/components/schemas/v2ChatCbi.ChatCbiResponse'
         '400':
           description: Bad Request
           content:
@@ -281,7 +281,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/v2ChatCBI.ChatCBIRequest'
+              $ref: '#/components/schemas/v2ChatCbi.ChatCbiRequest'
   /v2/financialtransactions/fundings:
     post:
       security:
@@ -1469,7 +1469,7 @@ components:
           description: The URL pointing to this source.
           type: string
           example: https://telecoms.com/492812/orange-goes-submarine-with-google-cable-partnership/
-    v2ChatCBI.ChatCBIRequest:
+    v2ChatCbi.ChatCbiRequest:
       type: object
       properties:
         chatID:
@@ -1482,7 +1482,7 @@ components:
           type: string
           example: Which emerging technology markets are seeing the highest equity
             funding growth right now?
-    v2ChatCBI.ChatCBIResponse:
+    v2ChatCbi.ChatCbiResponse:
       type: object
       properties:
         chatID:
@@ -1491,7 +1491,7 @@ components:
           type: string
           example: d5aa5a74-9334-4d92-aacf-e69577305b79
         message:
-          description: ChatCBI response to the message. Example is an excerpt.
+          description: ChatCbi response to the message. Example is an excerpt.
           type: string
           example: '# Emerging Technology Markets with Highest Equity Funding Growth
 
@@ -1503,12 +1503,12 @@ components:
           description: List of related references.
           type: array
           items:
-            $ref: '#/components/schemas/v2ChatCBI.Result'
+            $ref: '#/components/schemas/v2ChatCbi.Result'
         sources:
           description: List of sources used to generate the response.
           type: array
           items:
-            $ref: '#/components/schemas/v2ChatCBI.Source'
+            $ref: '#/components/schemas/v2ChatCbi.Source'
         suggestions:
           description: List of suggested follow-up questions.
           type: array
@@ -1522,7 +1522,7 @@ components:
           description: Title of the chat
           type: string
           example: Emerging Tech Markets with Highest Funding Growth
-    v2ChatCBI.Result:
+    v2ChatCbi.Result:
       type: object
       properties:
         date:
@@ -1537,11 +1537,11 @@ components:
         url:
           type: string
           example: https://app.cbinsights.com/markets?industry=Consumer+%26+Retail&tab=leaderboards
-    v2ChatCBI.Source:
+    v2ChatCbi.Source:
       type: object
       properties:
         result:
-          $ref: '#/components/schemas/v2ChatCBI.Result'
+          $ref: '#/components/schemas/v2ChatCbi.Result'
         sourceIndex:
           type: integer
           example: 1

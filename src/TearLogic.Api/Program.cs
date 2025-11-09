@@ -74,6 +74,8 @@ builder.Services.AddScoped<IExitProbabilityCommandHandler, ExitProbabilityComman
 builder.Services.AddScoped<IMosaicScoreCommandHandler, MosaicScoreCommandHandler>();
 builder.Services.AddScoped<IScoutingReportCommandHandler, ScoutingReportCommandHandler>();
 builder.Services.AddScoped<IScoutingReportStreamCommandHandler, ScoutingReportStreamCommandHandler>();
+builder.Services.AddScoped<IChatCbiCommandHandler, ChatCbiCommandHandler>();
+builder.Services.AddScoped<IChatCbiStreamCommandHandler, ChatCbiStreamCommandHandler>();
 
 builder.Services.AddHttpClient(CBInsightsHttpClientNames.Authorization, (provider, client) =>
 {

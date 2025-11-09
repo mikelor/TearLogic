@@ -1,6 +1,7 @@
 using System.IO;
 using TearLogic.Clients.Models.V2BusinessRelationships;
 using TearLogic.Clients.Models.V2FinancialTransactions;
+using TearLogic.Clients.Models.V2ChatCbi;
 using TearLogic.Clients.Models.V2Firmographics;
 using TearLogic.Clients.Models.V2ManagementAndBoard;
 using TearLogic.Clients.Models.V2OrganizationLookup;
@@ -96,4 +97,20 @@ public interface ICBInsightsClient
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The response stream when available.</returns>
     Task<Stream?> StreamScoutingReportAsync(int organizationId, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Sends a ChatCbi request using the CB Insights API.
+    /// </summary>
+    /// <param name="request">The request payload.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The ChatCbi response.</returns>
+    Task<ChatCbiResponse?> SendChatCbiRequestAsync(ChatCbiRequest request, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Streams a ChatCbi response using the CB Insights API.
+    /// </summary>
+    /// <param name="request">The request payload.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The streaming response when available.</returns>
+    Task<Stream?> StreamChatCbiAsync(ChatCbiRequest request, CancellationToken cancellationToken);
 }

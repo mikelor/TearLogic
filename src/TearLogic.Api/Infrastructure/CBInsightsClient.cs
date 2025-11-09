@@ -7,6 +7,7 @@ using Microsoft.Kiota.Http.HttpClientLibrary;
 using TearLogic.Clients;
 using TearLogic.Clients.Models.Common;
 using TearLogic.Clients.Models.V2BusinessRelationships;
+using TearLogic.Clients.Models.V2ChatCbi;
 using TearLogic.Clients.Models.V2FinancialTransactions;
 using TearLogic.Clients.Models.V2Firmographics;
 using TearLogic.Clients.Models.V2ManagementAndBoard;
@@ -432,6 +433,87 @@ public sealed class CBInsightsClient
         catch (Exception exception)
         {
             var errorMessage = _errorMessageProvider.GetString("ScoutingReportStreamRequestFailed") ?? "CB Insights scouting report stream request failed.";
+            _logger.LogError(exception, errorMessage);
+            throw;
+        }
+    }
+
+    /// <inheritdoc />
+    public async Task<ChatCbiResponse?> SendChatCbiRequestAsync(ChatCbiRequest request, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+        var client = await CreateClientAsync(cancellationToken).ConfigureAwait(false);
+        var message = _logMessageProvider.GetString("ChatCbiRequestStarted");
+        if (!string.IsNullOrWhiteSpace(message))
+        {
+            _logger.LogInformation(message);
+        }
+
+        try
+        {
+            var response = await client.V2.Chatcbi.PostAsync(request, cancellationToken: cancellationToken).ConfigureAwait(false);
+            message = _logMessageProvider.GetString("ChatCbiRequestCompleted");
+            if (!string.IsNullOrWhiteSpace(message))
+            {
+                _logger.LogInformation(message);
+            }
+
+            return response;
+        }
+        catch (ErrorWithCode exception)
+        {
+            var errorMessage = _errorMessageProvider.GetString("ChatCbiRequestFailed") ?? "CB Insights ChatCBI request failed.";
+            _logger.LogError(exception, errorMessage + " Code: {Code}", exception.Error);
+            throw;
+        }
+        catch (Exception exception)
+        {
+            var errorMessage = _errorMessageProvider.GetString("ChatCbiRequestFailed") ?? "CB Insights ChatCBI request failed.";
+            _logger.LogError(exception, errorMessage);
+            throw;
+        }
+    }
+
+    /// <inheritdoc />
+    public async Task<Stream?> StreamChatCbiAsync(ChatCbiRequest request, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+        var (client, adapter) = await CreateClientContextAsync(cancellationToken).ConfigureAwait(false);
+        var message = _logMessageProvider.GetString("ChatCbiStreamRequestStarted");
+        if (!string.IsNullOrWhiteSpace(message))
+        {
+            _logger.LogInformation(message);
+        }
+
+        var requestInfo = client.V2.Chatcbichunked.ToPostRequestInformation(request);
+        var errorMapping = new Dictionary<string, ParsableFactory<IParsable>>
+        {
+            { "400", ErrorWithCode.CreateFromDiscriminatorValue },
+            { "403", ErrorWithCode.CreateFromDiscriminatorValue },
+            { "424", ErrorWithCode.CreateFromDiscriminatorValue },
+            { "500", ErrorWithCode.CreateFromDiscriminatorValue },
+        };
+
+        try
+        {
+            var responseStream = await adapter.SendPrimitiveAsync<Stream>(requestInfo, errorMapping, cancellationToken).ConfigureAwait(false);
+            message = _logMessageProvider.GetString("ChatCbiStreamRequestCompleted");
+            if (!string.IsNullOrWhiteSpace(message))
+            {
+                _logger.LogInformation(message);
+            }
+
+            return responseStream;
+        }
+        catch (ErrorWithCode exception)
+        {
+            var errorMessage = _errorMessageProvider.GetString("ChatCbiStreamRequestFailed") ?? "CB Insights ChatCBI stream request failed.";
+            _logger.LogError(exception, errorMessage + " Code: {Code}", exception.Error);
+            throw;
+        }
+        catch (Exception exception)
+        {
+            var errorMessage = _errorMessageProvider.GetString("ChatCbiStreamRequestFailed") ?? "CB Insights ChatCBI stream request failed.";
             _logger.LogError(exception, errorMessage);
             throw;
         }

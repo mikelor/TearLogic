@@ -380,7 +380,7 @@
                 }
             }
         },
-        "v2ChatCBI.ChatCBIRequest": {
+        "v2ChatCbi.ChatCbiRequest": {
             "type": "object",
             "properties": {
                 "chatID": {
@@ -395,7 +395,7 @@
                 }
             }
         },
-        "v2ChatCBI.ChatCBIResponse": {
+        "v2ChatCbi.ChatCbiResponse": {
             "type": "object",
             "properties": {
                 "chatID": {
@@ -404,7 +404,7 @@
                     "example": "d5aa5a74-9334-4d92-aacf-e69577305b79"
                 },
                 "message": {
-                    "description": "ChatCBI response to the message. Example is an excerpt.",
+                    "description": "ChatCbi response to the message. Example is an excerpt.",
                     "type": "string",
                     "example": "# Emerging Technology Markets with Highest Equity Funding Growth\n\nBased on the latest data, several emerging technology markets are experiencing exceptional equity funding growth. Here's a breakdown of the markets showing the most significant year-over-year percentage increases:"
                 },
@@ -412,14 +412,14 @@
                     "description": "List of related references.",
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/v2ChatCBI.Result"
+                        "$ref": "#/definitions/v2ChatCbi.Result"
                     }
                 },
                 "sources": {
                     "description": "List of sources used to generate the response.",
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/v2ChatCBI.Source"
+                        "$ref": "#/definitions/v2ChatCbi.Source"
                     }
                 },
                 "suggestions": {
@@ -440,7 +440,7 @@
                 }
             }
         },
-        "v2ChatCBI.Result": {
+        "v2ChatCbi.Result": {
             "type": "object",
             "properties": {
                 "date": {
@@ -461,11 +461,11 @@
                 }
             }
         },
-        "v2ChatCBI.Source": {
+        "v2ChatCbi.Source": {
             "type": "object",
             "properties": {
                 "result": {
-                    "$ref": "#/definitions/v2ChatCBI.Result"
+                    "$ref": "#/definitions/v2ChatCbi.Result"
                 },
                 "sourceIndex": {
                     "type": "integer",

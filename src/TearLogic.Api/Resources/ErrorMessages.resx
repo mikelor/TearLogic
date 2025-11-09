@@ -48,4 +48,10 @@
   <data name="ScoutingReportStreamRequestFailed" xml:space="preserve">
     <value>CB Insights scouting report stream request failed.</value>
   </data>
+  <data name="ChatCbiRequestFailed" xml:space="preserve">
+    <value>CB Insights ChatCBI request failed.</value>
+  </data>
+  <data name="ChatCbiStreamRequestFailed" xml:space="preserve">
+    <value>CB Insights ChatCBI stream request failed.</value>
+  </data>
 </root>

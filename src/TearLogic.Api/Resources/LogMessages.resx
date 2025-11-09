@@ -78,4 +78,16 @@
   <data name="ScoutingReportStreamRequestCompleted" xml:space="preserve">
     <value>Scouting report stream request completed successfully.</value>
   </data>
+  <data name="ChatCbiRequestStarted" xml:space="preserve">
+    <value>Submitting ChatCBI request to CB Insights.</value>
+  </data>
+  <data name="ChatCbiRequestCompleted" xml:space="preserve">
+    <value>ChatCBI request completed successfully.</value>
+  </data>
+  <data name="ChatCbiStreamRequestStarted" xml:space="preserve">
+    <value>Submitting ChatCBI stream request to CB Insights.</value>
+  </data>
+  <data name="ChatCbiStreamRequestCompleted" xml:space="preserve">
+    <value>ChatCBI stream request completed successfully.</value>
+  </data>
 </root>
