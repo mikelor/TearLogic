@@ -1,5 +1,8 @@
 using System;
+using System.Collections.Generic;
+using System.IO;
 using Microsoft.Kiota.Abstractions;
+using Microsoft.Kiota.Abstractions.Serialization;
 using Microsoft.Kiota.Http.HttpClientLibrary;
 using TearLogic.Clients;
 using TearLogic.Clients.Models.Common;
@@ -9,6 +12,7 @@ using TearLogic.Clients.Models.V2Firmographics;
 using TearLogic.Clients.Models.V2ManagementAndBoard;
 using TearLogic.Clients.Models.V2OrganizationLookup;
 using TearLogic.Clients.Models.V2Outlook;
+using TearLogic.Clients.Models.V2ScoutingReports;
 
 namespace TearLogic.Api.CBInsights.Infrastructure;
 
@@ -70,7 +74,7 @@ public sealed class CBInsightsClient
     public async Task<FirmographicsResponse?> GetFirmographicsAsync(FirmographicsRequestBody request, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(request);
-        var client = await CreateClientAsync(cancellationToken).ConfigureAwait(false);
+        var (client, adapter) = await CreateClientContextAsync(cancellationToken).ConfigureAwait(false);
         var message = _logMessageProvider.GetString("FirmographicsLookupStarted");
         if (!string.IsNullOrWhiteSpace(message))
         {
@@ -191,7 +195,7 @@ public sealed class CBInsightsClient
             throw new ArgumentOutOfRangeException(nameof(organizationId), organizationId, "The organization identifier must be a positive integer.");
         }
 
-        var client = await CreateClientAsync(cancellationToken).ConfigureAwait(false);
+        var (client, adapter) = await CreateClientContextAsync(cancellationToken).ConfigureAwait(false);
         var message = _logMessageProvider.GetString("PortfolioExitsRequestStarted");
         if (!string.IsNullOrWhiteSpace(message))
         {
@@ -344,12 +348,108 @@ public sealed class CBInsightsClient
         }
     }
 
-    private async Task<CBInsightsApiClient> CreateClientAsync(CancellationToken cancellationToken)
+    /// <inheritdoc />
+    public async Task<ScoutingReportResponse?> GetScoutingReportAsync(int organizationId, CancellationToken cancellationToken)
+    {
+        if (organizationId <= 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(organizationId), organizationId, "The organization identifier must be a positive integer.");
+        }
+
+        var client = await CreateClientAsync(cancellationToken).ConfigureAwait(false);
+        var message = _logMessageProvider.GetString("ScoutingReportRequestStarted");
+        if (!string.IsNullOrWhiteSpace(message))
+        {
+            _logger.LogInformation(message);
+        }
+
+        try
+        {
+            var response = await client.V2.Organizations[organizationId].Scoutingreport.PostAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
+            message = _logMessageProvider.GetString("ScoutingReportRequestCompleted");
+            if (!string.IsNullOrWhiteSpace(message))
+            {
+                _logger.LogInformation(message);
+            }
+
+            return response;
+        }
+        catch (ErrorWithCode exception)
+        {
+            var errorMessage = _errorMessageProvider.GetString("ScoutingReportRequestFailed") ?? "CB Insights scouting report request failed.";
+            _logger.LogError(exception, errorMessage + " Code: {Code}", exception.Error);
+            throw;
+        }
+        catch (Exception exception)
+        {
+            var errorMessage = _errorMessageProvider.GetString("ScoutingReportRequestFailed") ?? "CB Insights scouting report request failed.";
+            _logger.LogError(exception, errorMessage);
+            throw;
+        }
+    }
+
+    /// <inheritdoc />
+    public async Task<Stream?> StreamScoutingReportAsync(int organizationId, CancellationToken cancellationToken)
+    {
+        if (organizationId <= 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(organizationId), organizationId, "The organization identifier must be a positive integer.");
+        }
+
+        var (client, adapter) = await CreateClientContextAsync(cancellationToken).ConfigureAwait(false);
+        var message = _logMessageProvider.GetString("ScoutingReportStreamRequestStarted");
+        if (!string.IsNullOrWhiteSpace(message))
+        {
+            _logger.LogInformation(message);
+        }
+
+        var requestInfo = client.V2.Organizations[organizationId].Scoutingreportstream.ToPostRequestInformation();
+        var errorMapping = new Dictionary<string, ParsableFactory<IParsable>>
+        {
+            { "400", ErrorWithCode.CreateFromDiscriminatorValue },
+            { "403", ErrorWithCode.CreateFromDiscriminatorValue },
+            { "424", ErrorWithCode.CreateFromDiscriminatorValue },
+            { "500", ErrorWithCode.CreateFromDiscriminatorValue },
+        };
+
+        try
+        {
+            var responseStream = await adapter.SendPrimitiveAsync<Stream>(requestInfo, errorMapping, cancellationToken).ConfigureAwait(false);
+            message = _logMessageProvider.GetString("ScoutingReportStreamRequestCompleted");
+            if (!string.IsNullOrWhiteSpace(message))
+            {
+                _logger.LogInformation(message);
+            }
+
+            return responseStream;
+        }
+        catch (ErrorWithCode exception)
+        {
+            var errorMessage = _errorMessageProvider.GetString("ScoutingReportStreamRequestFailed") ?? "CB Insights scouting report stream request failed.";
+            _logger.LogError(exception, errorMessage + " Code: {Code}", exception.Error);
+            throw;
+        }
+        catch (Exception exception)
+        {
+            var errorMessage = _errorMessageProvider.GetString("ScoutingReportStreamRequestFailed") ?? "CB Insights scouting report stream request failed.";
+            _logger.LogError(exception, errorMessage);
+            throw;
+        }
+    }
+
+    private async Task<(CBInsightsApiClient Client, IRequestAdapter RequestAdapter)> CreateClientContextAsync(CancellationToken cancellationToken)
     {
         var options = _optionsMonitor.CurrentValue;
         var adapter = await _requestAdapterFactory.CreateAsync(cancellationToken).ConfigureAwait(false);
         adapter.BaseUrl = options.BaseUrl;
-        return new CBInsightsApiClient(adapter);
+        var client = new CBInsightsApiClient(adapter);
+        return (client, adapter);
+    }
+
+    private async Task<CBInsightsApiClient> CreateClientAsync(CancellationToken cancellationToken)
+    {
+        var (client, _) = await CreateClientContextAsync(cancellationToken).ConfigureAwait(false);
+        return client;
     }
 }
 

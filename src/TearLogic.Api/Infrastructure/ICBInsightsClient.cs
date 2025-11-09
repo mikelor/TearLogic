@@ -1,9 +1,11 @@
+using System.IO;
 using TearLogic.Clients.Models.V2BusinessRelationships;
 using TearLogic.Clients.Models.V2FinancialTransactions;
 using TearLogic.Clients.Models.V2Firmographics;
 using TearLogic.Clients.Models.V2ManagementAndBoard;
 using TearLogic.Clients.Models.V2OrganizationLookup;
 using TearLogic.Clients.Models.V2Outlook;
+using TearLogic.Clients.Models.V2ScoutingReports;
 
 namespace TearLogic.Api.CBInsights.Infrastructure;
 
@@ -78,4 +80,20 @@ public interface ICBInsightsClient
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The outlook response.</returns>
     Task<OutlookResponse?> GetOutlookAsync(int organizationId, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Retrieves the scouting report for the specified organization.
+    /// </summary>
+    /// <param name="organizationId">The CB Insights organization identifier.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The scouting report response.</returns>
+    Task<ScoutingReportResponse?> GetScoutingReportAsync(int organizationId, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Streams the scouting report for the specified organization as JSON chunks.
+    /// </summary>
+    /// <param name="organizationId">The CB Insights organization identifier.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The response stream when available.</returns>
+    Task<Stream?> StreamScoutingReportAsync(int organizationId, CancellationToken cancellationToken);
 }
