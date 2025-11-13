@@ -40,7 +40,7 @@ param appServicePlanCapacity int = 1
 param appServiceName string = 'tl-api-${uniqueString(resourceGroup().id)}'
 
 @description('Defines the Linux runtime stack for the App Service.')
-param linuxFxVersion string = 'DOTNETCORE|8.0'
+param linuxFxVersion string = 'DOTNETCORE|10.0'
 
 @description('Declares custom application settings for the App Service.')
 param appSettings array = [
@@ -89,9 +89,9 @@ resource appService 'Microsoft.Web/sites@2023-12-01' = {
       linuxFxVersion: linuxFxVersion
       appSettings: normalizedAppSettings
       ftpsState: 'Disabled'
-      alwaysOn: true
+      alwaysOn: false
       http20Enabled: true
-      minimumTlsVersion: '1.2'
+      minTlsVersion: '1.2'
     }
   }
   tags: appServiceTags

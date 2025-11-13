@@ -6,10 +6,10 @@
       "value": "tl-dev-appservice-plan"
     },
     "appServicePlanSkuName": {
-      "value": "B1"
+      "value": "F1"
     },
     "appServicePlanSkuTier": {
-      "value": "Basic"
+      "value": "Free"
     },
     "appServicePlanCapacity": {
       "value": 1
