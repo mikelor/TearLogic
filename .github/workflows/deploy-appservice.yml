@@ -1,0 +1,116 @@
+name: Build & Deploy to Azure App Service (OIDC, self-contained)
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - "src/TearLogic.Api/**"
+      - ".github/workflows/deploy-appservice.yml"
+  workflow_dispatch:
+
+permissions:
+  id-token: write   # required for OIDC
+  contents: read
+
+env:
+  DOTNET_VERSION: "10.x"
+  PROJECT_PATH: "src/TearLogic.Api/TearLogic.Api.csproj"
+  RID: "linux-x64"
+  PUBLISH_DIR: "artifacts/publish"
+  ARTIFACT_ZIP: "artifacts/package.zip"
+  AZURE_WEBAPP_NAME: "tl-dev-api"
+  AZURE_RESOURCE_GROUP: "tl-rg-dev"
+  HEALTH_PATH: "/health"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Cache NuGet
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj','**/*.props','**/*.targets') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Restore
+        run: dotnet restore ${{ env.PROJECT_PATH }}
+
+      - name: Build (Release)
+        run: dotnet build ${{ env.PROJECT_PATH }} -c Release --no-restore
+
+      - name: Publish (self-contained single-file)
+        run: |
+          dotnet publish ${{ env.PROJECT_PATH }} \
+            -c Release \
+            -o ${{ env.PUBLISH_DIR }} \
+            -r ${{ env.RID }} --self-contained true \
+            /p:PublishSingleFile=true \
+            /p:InvariantGlobalization=true
+
+      - name: Create deployment ZIP
+        run: |
+          cd ${{ env.PUBLISH_DIR }}
+          zip -r ../package.zip .
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: drop
+          path: ${{ env.ARTIFACT_ZIP }}
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    environment:
+      name: production
+      url: ${{ steps.deploy.outputs.webapp-url }}
+    concurrency:
+      group: deploy-${{ env.AZURE_WEBAPP_NAME }}
+      cancel-in-progress: true
+    steps:
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: drop
+          path: drop
+
+      - name: Azure Login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      # Ensure desired app settings at deploy time (idempotent)
+      - name: Set essential app settings (Run From Package)
+        uses: azure/cli@v2
+        with:
+          inlineScript: |
+            az webapp config appsettings set \
+              --resource-group "${{ env.AZURE_RESOURCE_GROUP }}" \
+              --name "${{ env.AZURE_WEBAPP_NAME }}" \
+              --settings WEBSITE_RUN_FROM_PACKAGE=1 SCM_DO_BUILD_DURING_DEPLOYMENT=false
+
+      - name: Deploy ZIP to Azure Web App
+        id: deploy
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ env.AZURE_WEBAPP_NAME }}
+          package: "drop/package.zip"
+
+      - name: Smoke Test
+        run: |
+          echo "Warming up app..."
+          sleep 20
+          set -e
+          curl -I -sS "https://${{ env.AZURE_WEBAPP_NAME }}.azurewebsites.net${{ env.HEALTH_PATH }}" || true

@@ -42,11 +42,23 @@ param appServiceName string = 'tl-api-${uniqueString(resourceGroup().id)}'
 @description('Defines the Linux runtime stack for the App Service.')
 param linuxFxVersion string = 'DOTNETCORE|10.0'
 
+@description('Optional health check path (e.g., /health). Leave empty to disable.')
+param healthCheckPath string = ''
+
 @description('Declares custom application settings for the App Service.')
 param appSettings array = [
   {
     name: 'ASPNETCORE_ENVIRONMENT'
     value: 'Production'
+  }
+  // For self-contained/zip deploy best practice:
+  {
+    name: 'WEBSITE_RUN_FROM_PACKAGE'
+    value: '1'
+  }
+  {
+    name: 'SCM_DO_BUILD_DURING_DEPLOYMENT'
+    value: 'false'
   }
 ]
 
@@ -92,6 +104,7 @@ resource appService 'Microsoft.Web/sites@2023-12-01' = {
       alwaysOn: false
       http20Enabled: true
       minTlsVersion: '1.2'
+      healthCheckPath: empty(healthCheckPath) ? null : healthCheckPath
     }
   }
   tags: appServiceTags

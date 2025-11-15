@@ -2,21 +2,13 @@
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "appServicePlanName": {
-      "value": "tl-dev-appservice-plan"
-    },
-    "appServicePlanSkuName": {
-      "value": "F1"
-    },
-    "appServicePlanSkuTier": {
-      "value": "Free"
-    },
-    "appServicePlanCapacity": {
-      "value": 1
-    },
-    "appServiceName": {
-      "value": "tl-dev-api"
-    },
+    "appServicePlanName": { "value": "tl-dev-appservice-plan" },
+    "appServicePlanSkuName": { "value": "F1" },
+    "appServicePlanSkuTier": { "value": "Free" },
+    "appServicePlanCapacity": { "value": 1 },
+    "appServiceName": { "value": "tl-dev-api" },
+    "linuxFxVersion": { "value": "DOTNETCORE|10.0" },
+    "healthCheckPath": { "value": "" },
     "appSettings": {
       "value": [
         {
@@ -24,9 +16,14 @@
           "value": "Development"
         },
         {
-          "name": "APPLICATIONINSIGHTS_CONNECTION_STRING",
-          "value": ""
+          "name": "WEBSITE_RUN_FROM_PACKAGE",
+          "value": "1"
+        },
+        {
+          "name": "SCM_DO_BUILD_DURING_DEPLOYMENT",
+          "value": "false"
         }
+        // Add any other settings you need here, e.g. connection strings
       ]
     },
     "appServiceTags": {
