@@ -75,7 +75,7 @@ jobs:
       name: production
       url: ${{ steps.deploy.outputs.webapp-url }}
     concurrency:
-      group: deploy-${{ env.AZURE_WEBAPP_NAME }}
+      group: deploy-${{ github.workflow }}-${{ github.ref }}
       cancel-in-progress: true
     steps:
       - name: Download build artifact
