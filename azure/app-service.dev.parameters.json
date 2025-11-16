@@ -23,7 +23,6 @@
           "name": "SCM_DO_BUILD_DURING_DEPLOYMENT",
           "value": "false"
         }
-        // Add any other settings you need here, e.g. connection strings
       ]
     },
     "appServiceTags": {
