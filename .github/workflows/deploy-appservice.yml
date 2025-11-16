@@ -15,7 +15,6 @@ permissions:
 env:
   DOTNET_VERSION: "10.x"
   PROJECT_PATH: "src/TearLogic.Api/TearLogic.Api.csproj"
-  RID: "linux-x64"
   PUBLISH_DIR: "artifacts/publish"
   ARTIFACT_ZIP: "artifacts/package.zip"
   AZURE_WEBAPP_NAME: "tl-dev-api"
@@ -48,14 +47,12 @@ jobs:
       - name: Build (Release)
         run: dotnet build ${{ env.PROJECT_PATH }} -c Release --no-restore
 
-      - name: Publish (self-contained single-file)
+      - name: Publish (framework-dependent)
         run: |
           dotnet publish ${{ env.PROJECT_PATH }} \
             -c Release \
             -o ${{ env.PUBLISH_DIR }} \
-            -r ${{ env.RID }} --self-contained true \
-            /p:PublishSingleFile=true \
-            /p:InvariantGlobalization=true
+            --no-self-contained
 
       - name: Create deployment ZIP
         run: |

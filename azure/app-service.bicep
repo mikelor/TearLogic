@@ -42,6 +42,15 @@ param appServiceName string = 'tl-api-${uniqueString(resourceGroup().id)}'
 @description('Defines the Linux runtime stack for the App Service.')
 param linuxFxVersion string = 'DOTNETCORE|10.0'
 
+@description('Enables HTTP access logging for troubleshooting client issues.')
+param enableHttpLogging bool = true
+
+@description('Enables detailed error logging for failed HTTP requests.')
+param enableDetailedErrorLogging bool = true
+
+@description('Enables failed request tracing (IIS logs) for HTTP diagnostics.')
+param enableRequestTracing bool = true
+
 @description('Optional health check path (e.g., /health). Leave empty to disable.')
 param healthCheckPath string = ''
 
@@ -104,6 +113,10 @@ resource appService 'Microsoft.Web/sites@2023-12-01' = {
       alwaysOn: false
       http20Enabled: true
       minTlsVersion: '1.2'
+      httpLoggingEnabled: enableHttpLogging
+      detailedErrorLoggingEnabled: enableDetailedErrorLogging
+      requestTracingEnabled: enableRequestTracing
+      logsDirectorySizeLimit: 100
       healthCheckPath: empty(healthCheckPath) ? null : healthCheckPath
     }
   }
