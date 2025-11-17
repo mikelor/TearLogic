@@ -92,10 +92,10 @@ jobs:
         shell: bash
         run: |
           echo "AZURE_SUBSCRIPTION_ID=${AZURE_SUBSCRIPTION_ID:-<unset>}"
-          echo "AZURE_TENANT_ID=${AZURE_TENANT_ID:-<unset>}"
+          echo "AZURE_TENANT_ID" ${{vars.AZURE_TENANT_ID}}
           echo "AZURE_CLIENT_ID=${AZURE_CLIENT_ID:-<unset>}"
           # debug-level message (visible only if ACTIONS_STEP_DEBUG=true secret exists)
-          echo "::debug::AZURE_SUBSCRIPTION_ID=${AZURE_SUBSCRIPTION_ID:-<unset>}"
+          echo "::debug::AZURE_SUBSCRIPTION_ID=${AZURE_SUBSCRIPTION_ID}"
           
       - name: Azure Login (OIDC)
         uses: azure/login@v2
