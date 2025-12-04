@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
 using Microsoft.Kiota.Abstractions;
 using Microsoft.Kiota.Abstractions.Serialization;
 using Microsoft.Kiota.Http.HttpClientLibrary;
@@ -40,33 +37,22 @@ public sealed class CBInsightsClient
     {
         ArgumentNullException.ThrowIfNull(request);
         var client = await CreateClientAsync(cancellationToken).ConfigureAwait(false);
-        var message = _logMessageProvider.GetString("OrganizationLookupStarted");
-        if (!string.IsNullOrWhiteSpace(message))
-        {
-            _logger.LogInformation(message);
-        }
+        _logger.LogOrganizationLookupStarted();
 
         try
         {
             var response = await client.V2.Organizations.PostAsync(request, cancellationToken: cancellationToken).ConfigureAwait(false);
-            message = _logMessageProvider.GetString("OrganizationLookupCompleted");
-            if (!string.IsNullOrWhiteSpace(message))
-            {
-                _logger.LogInformation(message);
-            }
-
+            _logger.LogOrganizationLookupCompleted();
             return response;
         }
         catch (ErrorWithCode exception)
         {
-            var errorMessage = _errorMessageProvider.GetString("OrganizationLookupFailed") ?? "CB Insights organization lookup failed.";
-            _logger.LogError(exception, errorMessage + " Code: {Code}", exception.Error);
+            _logger.LogOrganizationLookupFailed(exception, exception.Error ?? "Unknown");
             throw;
         }
         catch (Exception exception)
         {
-            var errorMessage = _errorMessageProvider.GetString("OrganizationLookupFailed") ?? "CB Insights organization lookup failed.";
-            _logger.LogError(exception, errorMessage);
+            _logger.LogOrganizationLookupFailedGeneric(exception);
             throw;
         }
     }
@@ -76,33 +62,22 @@ public sealed class CBInsightsClient
     {
         ArgumentNullException.ThrowIfNull(request);
         var (client, adapter) = await CreateClientContextAsync(cancellationToken).ConfigureAwait(false);
-        var message = _logMessageProvider.GetString("FirmographicsLookupStarted");
-        if (!string.IsNullOrWhiteSpace(message))
-        {
-            _logger.LogInformation(message);
-        }
+        _logger.LogFirmographicsLookupStarted();
 
         try
         {
             var response = await client.V2.Firmographics.PostAsync(request, cancellationToken: cancellationToken).ConfigureAwait(false);
-            message = _logMessageProvider.GetString("FirmographicsLookupCompleted");
-            if (!string.IsNullOrWhiteSpace(message))
-            {
-                _logger.LogInformation(message);
-            }
-
+            _logger.LogFirmographicsLookupCompleted();
             return response;
         }
         catch (ErrorWithCode exception)
         {
-            var errorMessage = _errorMessageProvider.GetString("FirmographicsLookupFailed") ?? "CB Insights firmographics lookup failed.";
-            _logger.LogError(exception, errorMessage + " Code: {Code}", exception.Error);
+            _logger.LogFirmographicsLookupFailed(exception, exception.Error ?? "Unknown");
             throw;
         }
         catch (Exception exception)
         {
-            var errorMessage = _errorMessageProvider.GetString("FirmographicsLookupFailed") ?? "CB Insights firmographics lookup failed.";
-            _logger.LogError(exception, errorMessage);
+            _logger.LogFirmographicsLookupFailedGeneric(exception);
             throw;
         }
     }
@@ -116,33 +91,22 @@ public sealed class CBInsightsClient
 
         ArgumentNullException.ThrowIfNull(request);
         var client = await CreateClientAsync(cancellationToken).ConfigureAwait(false);
-        var message = _logMessageProvider.GetString("FundingsRequestStarted");
-        if (!string.IsNullOrWhiteSpace(message))
-        {
-            _logger.LogInformation(message);
-        }
+        _logger.LogFundingsRequestStarted();
 
         try
         {
             var response = await client.V2.Organizations[organizationId].Financialtransactions.Fundings.PostAsync(request, cancellationToken: cancellationToken).ConfigureAwait(false);
-            message = _logMessageProvider.GetString("FundingsRequestCompleted");
-            if (!string.IsNullOrWhiteSpace(message))
-            {
-                _logger.LogInformation(message);
-            }
-
+            _logger.LogFundingsRequestCompleted();
             return response;
         }
         catch (ErrorWithCode exception)
         {
-            var errorMessage = _errorMessageProvider.GetString("FundingsRequestFailed") ?? "CB Insights fundings request failed.";
-            _logger.LogError(exception, errorMessage + " Code: {Code}", exception.Error);
+            _logger.LogFundingsRequestFailed(exception, exception.Error ?? "Unknown");
             throw;
         }
         catch (Exception exception)
         {
-            var errorMessage = _errorMessageProvider.GetString("FundingsRequestFailed") ?? "CB Insights fundings request failed.";
-            _logger.LogError(exception, errorMessage);
+            _logger.LogFundingsRequestFailedGeneric(exception);
             throw;
         }
     }
@@ -157,33 +121,22 @@ public sealed class CBInsightsClient
 
         ArgumentNullException.ThrowIfNull(request);
         var client = await CreateClientAsync(cancellationToken).ConfigureAwait(false);
-        var message = _logMessageProvider.GetString("InvestmentsRequestStarted");
-        if (!string.IsNullOrWhiteSpace(message))
-        {
-            _logger.LogInformation(message);
-        }
+        _logger.LogInvestmentsRequestStarted();
 
         try
         {
             var response = await client.V2.Organizations[organizationId].Financialtransactions.Investments.PostAsync(request, cancellationToken: cancellationToken).ConfigureAwait(false);
-            message = _logMessageProvider.GetString("InvestmentsRequestCompleted");
-            if (!string.IsNullOrWhiteSpace(message))
-            {
-                _logger.LogInformation(message);
-            }
-
+            _logger.LogInvestmentsRequestCompleted();
             return response;
         }
         catch (ErrorWithCode exception)
         {
-            var errorMessage = _errorMessageProvider.GetString("InvestmentsRequestFailed") ?? "CB Insights investments request failed.";
-            _logger.LogError(exception, errorMessage + " Code: {Code}", exception.Error);
+            _logger.LogInvestmentsRequestFailed(exception, exception.Error ?? "Unknown");
             throw;
         }
         catch (Exception exception)
         {
-            var errorMessage = _errorMessageProvider.GetString("InvestmentsRequestFailed") ?? "CB Insights investments request failed.";
-            _logger.LogError(exception, errorMessage);
+            _logger.LogInvestmentsRequestFailedGeneric(exception);
             throw;
         }
     }
@@ -197,33 +150,22 @@ public sealed class CBInsightsClient
         }
 
         var (client, adapter) = await CreateClientContextAsync(cancellationToken).ConfigureAwait(false);
-        var message = _logMessageProvider.GetString("PortfolioExitsRequestStarted");
-        if (!string.IsNullOrWhiteSpace(message))
-        {
-            _logger.LogInformation(message);
-        }
+        _logger.LogPortfolioExitsRequestStarted();
 
         try
         {
             var response = await client.V2.Organizations[organizationId].Financialtransactions.Portfolioexits.PostAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
-            message = _logMessageProvider.GetString("PortfolioExitsRequestCompleted");
-            if (!string.IsNullOrWhiteSpace(message))
-            {
-                _logger.LogInformation(message);
-            }
-
+            _logger.LogPortfolioExitsRequestCompleted();
             return response;
         }
         catch (ErrorWithCode exception)
         {
-            var errorMessage = _errorMessageProvider.GetString("PortfolioExitsRequestFailed") ?? "CB Insights portfolio exits request failed.";
-            _logger.LogError(exception, errorMessage + " Code: {Code}", exception.Error);
+            _logger.LogPortfolioExitsRequestFailed(exception, exception.Error ?? "Unknown");
             throw;
         }
         catch (Exception exception)
         {
-            var errorMessage = _errorMessageProvider.GetString("PortfolioExitsRequestFailed") ?? "CB Insights portfolio exits request failed.";
-            _logger.LogError(exception, errorMessage);
+            _logger.LogPortfolioExitsRequestFailedGeneric(exception);
             throw;
         }
     }
@@ -237,33 +179,22 @@ public sealed class CBInsightsClient
         }
 
         var client = await CreateClientAsync(cancellationToken).ConfigureAwait(false);
-        var message = _logMessageProvider.GetString("BusinessRelationshipsRequestStarted");
-        if (!string.IsNullOrWhiteSpace(message))
-        {
-            _logger.LogInformation(message);
-        }
+        _logger.LogBusinessRelationshipsRequestStarted();
 
         try
         {
             var response = await client.V2.Organizations[organizationId].Businessrelationships.PostAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
-            message = _logMessageProvider.GetString("BusinessRelationshipsRequestCompleted");
-            if (!string.IsNullOrWhiteSpace(message))
-            {
-                _logger.LogInformation(message);
-            }
-
+            _logger.LogBusinessRelationshipsRequestCompleted();
             return response;
         }
         catch (ErrorWithCode exception)
         {
-            var errorMessage = _errorMessageProvider.GetString("BusinessRelationshipsRequestFailed") ?? "CB Insights business relationships request failed.";
-            _logger.LogError(exception, errorMessage + " Code: {Code}", exception.Error);
+            _logger.LogBusinessRelationshipsRequestFailed(exception, exception.Error ?? "Unknown");
             throw;
         }
         catch (Exception exception)
         {
-            var errorMessage = _errorMessageProvider.GetString("BusinessRelationshipsRequestFailed") ?? "CB Insights business relationships request failed.";
-            _logger.LogError(exception, errorMessage);
+            _logger.LogBusinessRelationshipsRequestFailedGeneric(exception);
             throw;
         }
     }
@@ -278,33 +209,22 @@ public sealed class CBInsightsClient
 
         ArgumentNullException.ThrowIfNull(request);
         var client = await CreateClientAsync(cancellationToken).ConfigureAwait(false);
-        var message = _logMessageProvider.GetString("ManagementAndBoardRequestStarted");
-        if (!string.IsNullOrWhiteSpace(message))
-        {
-            _logger.LogInformation(message);
-        }
+        _logger.LogManagementAndBoardRequestStarted();
 
         try
         {
             var response = await client.V2.Organizations[organizationId].Managementandboard.PostAsync(request, cancellationToken: cancellationToken).ConfigureAwait(false);
-            message = _logMessageProvider.GetString("ManagementAndBoardRequestCompleted");
-            if (!string.IsNullOrWhiteSpace(message))
-            {
-                _logger.LogInformation(message);
-            }
-
+            _logger.LogManagementAndBoardRequestCompleted();
             return response;
         }
         catch (ErrorWithCode exception)
         {
-            var errorMessage = _errorMessageProvider.GetString("ManagementAndBoardRequestFailed") ?? "CB Insights management and board request failed.";
-            _logger.LogError(exception, errorMessage + " Code: {Code}", exception.Error);
+            _logger.LogManagementAndBoardRequestFailed(exception, exception.Error ?? "Unknown");
             throw;
         }
         catch (Exception exception)
         {
-            var errorMessage = _errorMessageProvider.GetString("ManagementAndBoardRequestFailed") ?? "CB Insights management and board request failed.";
-            _logger.LogError(exception, errorMessage);
+            _logger.LogManagementAndBoardRequestFailedGeneric(exception);
             throw;
         }
     }
@@ -318,33 +238,22 @@ public sealed class CBInsightsClient
         }
 
         var client = await CreateClientAsync(cancellationToken).ConfigureAwait(false);
-        var message = _logMessageProvider.GetString("OutlookRequestStarted");
-        if (!string.IsNullOrWhiteSpace(message))
-        {
-            _logger.LogInformation(message);
-        }
+        _logger.LogOutlookRequestStarted();
 
         try
         {
             var response = await client.V2.Organizations[organizationId].Outlook.PostAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
-            message = _logMessageProvider.GetString("OutlookRequestCompleted");
-            if (!string.IsNullOrWhiteSpace(message))
-            {
-                _logger.LogInformation(message);
-            }
-
+            _logger.LogOutlookRequestCompleted();
             return response;
         }
         catch (ErrorWithCode exception)
         {
-            var errorMessage = _errorMessageProvider.GetString("OutlookRequestFailed") ?? "CB Insights outlook request failed.";
-            _logger.LogError(exception, errorMessage + " Code: {Code}", exception.Error);
+            _logger.LogOutlookRequestFailed(exception, exception.Error ?? "Unknown");
             throw;
         }
         catch (Exception exception)
         {
-            var errorMessage = _errorMessageProvider.GetString("OutlookRequestFailed") ?? "CB Insights outlook request failed.";
-            _logger.LogError(exception, errorMessage);
+            _logger.LogOutlookRequestFailedGeneric(exception);
             throw;
         }
     }
@@ -358,33 +267,22 @@ public sealed class CBInsightsClient
         }
 
         var client = await CreateClientAsync(cancellationToken).ConfigureAwait(false);
-        var message = _logMessageProvider.GetString("ScoutingReportRequestStarted");
-        if (!string.IsNullOrWhiteSpace(message))
-        {
-            _logger.LogInformation(message);
-        }
+        _logger.LogScoutingReportRequestStarted();
 
         try
         {
             var response = await client.V2.Organizations[organizationId].Scoutingreport.PostAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
-            message = _logMessageProvider.GetString("ScoutingReportRequestCompleted");
-            if (!string.IsNullOrWhiteSpace(message))
-            {
-                _logger.LogInformation(message);
-            }
-
+            _logger.LogScoutingReportRequestCompleted();
             return response;
         }
         catch (ErrorWithCode exception)
         {
-            var errorMessage = _errorMessageProvider.GetString("ScoutingReportRequestFailed") ?? "CB Insights scouting report request failed.";
-            _logger.LogError(exception, errorMessage + " Code: {Code}", exception.Error);
+            _logger.LogScoutingReportRequestFailed(exception, exception.Error ?? "Unknown");
             throw;
         }
         catch (Exception exception)
         {
-            var errorMessage = _errorMessageProvider.GetString("ScoutingReportRequestFailed") ?? "CB Insights scouting report request failed.";
-            _logger.LogError(exception, errorMessage);
+            _logger.LogScoutingReportRequestFailedGeneric(exception);
             throw;
         }
     }
@@ -398,42 +296,31 @@ public sealed class CBInsightsClient
         }
 
         var (client, adapter) = await CreateClientContextAsync(cancellationToken).ConfigureAwait(false);
-        var message = _logMessageProvider.GetString("ScoutingReportStreamRequestStarted");
-        if (!string.IsNullOrWhiteSpace(message))
-        {
-            _logger.LogInformation(message);
-        }
+        _logger.LogScoutingReportStreamRequestStarted();
 
         var requestInfo = client.V2.Organizations[organizationId].Scoutingreportstream.ToPostRequestInformation();
-        var errorMapping = new Dictionary<string, ParsableFactory<IParsable>>
+        Dictionary<string, ParsableFactory<IParsable>> errorMapping = new()
         {
-            { "400", ErrorWithCode.CreateFromDiscriminatorValue },
-            { "403", ErrorWithCode.CreateFromDiscriminatorValue },
-            { "424", ErrorWithCode.CreateFromDiscriminatorValue },
-            { "500", ErrorWithCode.CreateFromDiscriminatorValue },
+            ["400"] = ErrorWithCode.CreateFromDiscriminatorValue,
+            ["403"] = ErrorWithCode.CreateFromDiscriminatorValue,
+            ["424"] = ErrorWithCode.CreateFromDiscriminatorValue,
+            ["500"] = ErrorWithCode.CreateFromDiscriminatorValue,
         };
 
         try
         {
             var responseStream = await adapter.SendPrimitiveAsync<Stream>(requestInfo, errorMapping, cancellationToken).ConfigureAwait(false);
-            message = _logMessageProvider.GetString("ScoutingReportStreamRequestCompleted");
-            if (!string.IsNullOrWhiteSpace(message))
-            {
-                _logger.LogInformation(message);
-            }
-
+            _logger.LogScoutingReportStreamRequestCompleted();
             return responseStream;
         }
         catch (ErrorWithCode exception)
         {
-            var errorMessage = _errorMessageProvider.GetString("ScoutingReportStreamRequestFailed") ?? "CB Insights scouting report stream request failed.";
-            _logger.LogError(exception, errorMessage + " Code: {Code}", exception.Error);
+            _logger.LogScoutingReportStreamRequestFailed(exception, exception.Error ?? "Unknown");
             throw;
         }
         catch (Exception exception)
         {
-            var errorMessage = _errorMessageProvider.GetString("ScoutingReportStreamRequestFailed") ?? "CB Insights scouting report stream request failed.";
-            _logger.LogError(exception, errorMessage);
+            _logger.LogScoutingReportStreamRequestFailedGeneric(exception);
             throw;
         }
     }
@@ -443,33 +330,22 @@ public sealed class CBInsightsClient
     {
         ArgumentNullException.ThrowIfNull(request);
         var client = await CreateClientAsync(cancellationToken).ConfigureAwait(false);
-        var message = _logMessageProvider.GetString("ChatCbiRequestStarted");
-        if (!string.IsNullOrWhiteSpace(message))
-        {
-            _logger.LogInformation(message);
-        }
+        _logger.LogChatCbiRequestStarted();
 
         try
         {
             var response = await client.V2.Chatcbi.PostAsync(request, cancellationToken: cancellationToken).ConfigureAwait(false);
-            message = _logMessageProvider.GetString("ChatCbiRequestCompleted");
-            if (!string.IsNullOrWhiteSpace(message))
-            {
-                _logger.LogInformation(message);
-            }
-
+            _logger.LogChatCbiRequestCompleted();
             return response;
         }
         catch (ErrorWithCode exception)
         {
-            var errorMessage = _errorMessageProvider.GetString("ChatCbiRequestFailed") ?? "CB Insights ChatCBI request failed.";
-            _logger.LogError(exception, errorMessage + " Code: {Code}", exception.Error);
+            _logger.LogChatCbiRequestFailed(exception, exception.Error ?? "Unknown");
             throw;
         }
         catch (Exception exception)
         {
-            var errorMessage = _errorMessageProvider.GetString("ChatCbiRequestFailed") ?? "CB Insights ChatCBI request failed.";
-            _logger.LogError(exception, errorMessage);
+            _logger.LogChatCbiRequestFailedGeneric(exception);
             throw;
         }
     }
@@ -479,42 +355,31 @@ public sealed class CBInsightsClient
     {
         ArgumentNullException.ThrowIfNull(request);
         var (client, adapter) = await CreateClientContextAsync(cancellationToken).ConfigureAwait(false);
-        var message = _logMessageProvider.GetString("ChatCbiStreamRequestStarted");
-        if (!string.IsNullOrWhiteSpace(message))
-        {
-            _logger.LogInformation(message);
-        }
+        _logger.LogChatCbiStreamRequestStarted();
 
         var requestInfo = client.V2.Chatcbichunked.ToPostRequestInformation(request);
-        var errorMapping = new Dictionary<string, ParsableFactory<IParsable>>
+        Dictionary<string, ParsableFactory<IParsable>> errorMapping = new()
         {
-            { "400", ErrorWithCode.CreateFromDiscriminatorValue },
-            { "403", ErrorWithCode.CreateFromDiscriminatorValue },
-            { "424", ErrorWithCode.CreateFromDiscriminatorValue },
-            { "500", ErrorWithCode.CreateFromDiscriminatorValue },
+            ["400"] = ErrorWithCode.CreateFromDiscriminatorValue,
+            ["403"] = ErrorWithCode.CreateFromDiscriminatorValue,
+            ["424"] = ErrorWithCode.CreateFromDiscriminatorValue,
+            ["500"] = ErrorWithCode.CreateFromDiscriminatorValue,
         };
 
         try
         {
             var responseStream = await adapter.SendPrimitiveAsync<Stream>(requestInfo, errorMapping, cancellationToken).ConfigureAwait(false);
-            message = _logMessageProvider.GetString("ChatCbiStreamRequestCompleted");
-            if (!string.IsNullOrWhiteSpace(message))
-            {
-                _logger.LogInformation(message);
-            }
-
+            _logger.LogChatCbiStreamRequestCompleted();
             return responseStream;
         }
         catch (ErrorWithCode exception)
         {
-            var errorMessage = _errorMessageProvider.GetString("ChatCbiStreamRequestFailed") ?? "CB Insights ChatCBI stream request failed.";
-            _logger.LogError(exception, errorMessage + " Code: {Code}", exception.Error);
+            _logger.LogChatCbiStreamRequestFailed(exception, exception.Error ?? "Unknown");
             throw;
         }
         catch (Exception exception)
         {
-            var errorMessage = _errorMessageProvider.GetString("ChatCbiStreamRequestFailed") ?? "CB Insights ChatCBI stream request failed.";
-            _logger.LogError(exception, errorMessage);
+            _logger.LogChatCbiStreamRequestFailedGeneric(exception);
             throw;
         }
     }
