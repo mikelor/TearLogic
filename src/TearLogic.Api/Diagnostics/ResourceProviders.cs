@@ -33,10 +33,11 @@ public interface IErrorMessageProvider
 /// </summary>
 public sealed class LogMessageProvider : ILogMessageProvider
 {
-    private static readonly ResourceManager ResourceManager = new("TearLogic.Api.CBInsights.Resources.LogMessages", typeof(LogMessageProvider).Assembly);
+    private static readonly Lazy<ResourceManager> LazyResourceManager = 
+        new(() => new ResourceManager("TearLogic.Api.CBInsights.Resources.LogMessages", typeof(LogMessageProvider).Assembly));
 
     /// <inheritdoc />
-    public string? GetString(string name) => ResourceManager.GetString(name);
+    public string? GetString(string name) => LazyResourceManager.Value.GetString(name);
 }
 
 /// <summary>
@@ -44,8 +45,9 @@ public sealed class LogMessageProvider : ILogMessageProvider
 /// </summary>
 public sealed class ErrorMessageProvider : IErrorMessageProvider
 {
-    private static readonly ResourceManager ResourceManager = new("TearLogic.Api.CBInsights.Resources.ErrorMessages", typeof(ErrorMessageProvider).Assembly);
+    private static readonly Lazy<ResourceManager> LazyResourceManager = 
+        new(() => new ResourceManager("TearLogic.Api.CBInsights.Resources.ErrorMessages", typeof(ErrorMessageProvider).Assembly));
 
     /// <inheritdoc />
-    public string? GetString(string name) => ResourceManager.GetString(name);
+    public string? GetString(string name) => LazyResourceManager.Value.GetString(name);
 }

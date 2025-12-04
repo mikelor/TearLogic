@@ -1,5 +1,3 @@
-using System.Net.Http.Json;
-
 namespace TearLogic.Api.CBInsights.Infrastructure;
 
 /// <summary>
@@ -41,20 +39,11 @@ public sealed class CBInsightsTokenProvider
     {
         if (_memoryCache.TryGetValue(CacheKey, out string? token) && !string.IsNullOrWhiteSpace(token))
         {
-            var cacheMessage = _logMessageProvider.GetString("TokenCacheHit");
-            if (!string.IsNullOrWhiteSpace(cacheMessage))
-            {
-                _logger.LogInformation(cacheMessage);
-            }
-
+            _logger.LogTokenCacheHit();
             return token;
         }
 
-        var refreshMessage = _logMessageProvider.GetString("TokenRefreshing");
-        if (!string.IsNullOrWhiteSpace(refreshMessage))
-        {
-            _logger.LogInformation(refreshMessage);
-        }
+        _logger.LogTokenRefreshing();
 
         var options = _optionsMonitor.CurrentValue;
         var client = _httpClientFactory.CreateClient(CBInsightsHttpClientNames.Authorization);
@@ -62,17 +51,15 @@ public sealed class CBInsightsTokenProvider
         using var response = await client.PostAsJsonAsync(options.AuthorizeEndpoint, payload, cancellationToken).ConfigureAwait(false);
         if (!response.IsSuccessStatusCode)
         {
-            var errorMessage = _errorMessageProvider.GetString("TokenAcquisitionFailed") ?? "Unable to acquire a CB Insights authorization token.";
-            _logger.LogError("{Message} StatusCode: {StatusCode}", errorMessage, response.StatusCode);
-            throw new InvalidOperationException(errorMessage);
+            _logger.LogTokenAcquisitionFailed(response.StatusCode);
+            throw new InvalidOperationException("Unable to acquire a CB Insights authorization token.");
         }
 
         var authorization = await response.Content.ReadFromJsonAsync<AuthorizationResponse>(cancellationToken: cancellationToken).ConfigureAwait(false);
         if (authorization?.Token is null)
         {
-            var errorMessage = _errorMessageProvider.GetString("TokenResponseInvalid") ?? "The CB Insights authorization response did not include a token.";
-            _logger.LogError(errorMessage);
-            throw new InvalidOperationException(errorMessage);
+            _logger.LogTokenResponseInvalid();
+            throw new InvalidOperationException("The CB Insights authorization response did not include a token.");
         }
 
         var cacheEntryOptions = new MemoryCacheEntryOptions

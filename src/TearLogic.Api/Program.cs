@@ -1,5 +1,4 @@
 using System.Globalization;
-using System.IO;
 using System.Reflection;
 using Microsoft.Extensions.Primitives;
 using Microsoft.OpenApi.Models;
@@ -107,12 +106,12 @@ if (app.Environment.IsDevelopment())
         {
             var servers = new List<OpenApiServer>
             {
-                new OpenApiServer
+                new()
                 {
                     Url = "https://api.example.com/v1", // Production API URL
                     Description = "Production Server (Live Data)"
                 },
-                new OpenApiServer
+                new()
                 {
                     Url = "https://sandbox-api.example.com:8443/v1", // QA API URL
                     Description = "Sandbox Server (Test Data)"
@@ -149,7 +148,7 @@ if (app.Environment.IsDevelopment())
 
             if (!string.IsNullOrWhiteSpace(requestUrl))
             {
-                servers.Add(new OpenApiServer
+                servers.Add(new()
                 {
                     Url = requestUrl,
                     Description = isDevTunnelHost ? "Development Server (Visual Studio Dev Tunnel)" : "Development Server (Local Host)"
@@ -159,7 +158,7 @@ if (app.Environment.IsDevelopment())
             var devTunnelUrl = Environment.GetEnvironmentVariable("VS_TUNNEL_URL");
             if (!string.IsNullOrWhiteSpace(devTunnelUrl) && !string.Equals(devTunnelUrl, requestUrl, StringComparison.OrdinalIgnoreCase))
             {
-                servers.Add(new OpenApiServer
+                servers.Add(new()
                 {
                     Url = devTunnelUrl,
                     Description = "Development Server (Visual Studio Dev Tunnel)"
